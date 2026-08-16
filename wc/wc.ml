@@ -5,9 +5,7 @@ License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by Paul Rubin and David MacKenzie.
-
-|}
+Written by Paul Rubin and David MacKenzie.|}
 ;;
 
 let show_help () =
@@ -49,9 +47,7 @@ Report bugs to: bug-coreutils@gnu.org
 GNU coreutils home page: <https://www.gnu.org/software/coreutils/>
 General help using GNU software: <https://www.gnu.org/gethelp/>
 Full documentation <https://www.gnu.org/software/coreutils/wc>
-or available locally via: info '(coreutils) wc invocation'
-
-|}
+or available locally via: info '(coreutils) wc invocation'|}
 ;;
 
 let main () =
