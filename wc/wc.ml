@@ -50,6 +50,40 @@ Full documentation <https://www.gnu.org/software/coreutils/wc>
 or available locally via: info '(coreutils) wc invocation'|}
 ;;
 
+let count_bytes (file_path: string): unit =
+  let in_chan = In_channel.open_bin file_path in
+
+  let str_file = In_channel.input_all in_chan in
+  close_in in_chan;
+
+  let num_bytes = Bytes.length (Bytes.of_string str_file) in
+
+  Printf.printf "%d %s\n" num_bytes file_path
+;;
+
+let get_file_path (args: string array): string option =
+  let arr = Array.sub args 1 (Array.length args - 1) in
+  Array.find_opt (fun arg -> not (String.starts_with ~prefix:"-" arg)) arr
+;;
+
+let process_other_args (args: string array): unit =
+  let rec loop i args path =
+    let len = Array.length args in
+    if i = len then
+      print_endline "Args exausted and no flag found"
+    else
+      match args.(i) with
+      | "-c" | "--bytes" -> count_bytes path
+      | _ -> loop (i + 1) args path
+  in
+
+  let file_path = get_file_path Sys.argv in
+  if Option.is_none file_path then
+    failwith "File path not provided."
+  else
+    loop 1 Sys.argv (Option.get file_path)
+;;
+
 let main () =
   let len = Array.length Sys.argv in
   let no_args = 1 in
@@ -67,7 +101,7 @@ let main () =
       show_version ()
 
     else
-      failwith "Not implemented: other args"
+      process_other_args Sys.argv
 ;;
 
 let () =
