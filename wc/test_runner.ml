@@ -59,10 +59,15 @@ let test_wc_count_lines (my_cmd: string): unit =
   e2e_test "wc --lines ./man_wc.txt" (my_cmd ^ " --lines ./man_wc.txt")
 ;;
 
+let test_wc_count_words (my_cmd: string): unit =
+  e2e_test "wc --words ./man_wc.txt" (my_cmd ^ " --words ./man_wc.txt")
+;;
+
 let () =
   let my_wc = "./_build/default/wc.exe" in
   test_help my_wc;
   test_version my_wc;
   test_wc_count_bytes my_wc;
-  test_wc_count_lines my_wc
+  test_wc_count_lines my_wc;
+  test_wc_count_words my_wc
 ;;

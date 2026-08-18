@@ -65,8 +65,56 @@ let count_lines (file_path: string): unit =
   let in_chan = In_channel.open_bin file_path in
 
   let lines = In_channel.input_lines in_chan in
+  close_in in_chan;
 
   Printf.printf "%d %s\n" (List.length lines) file_path
+;;
+
+let string_to_list (source: string): char list =
+  List.init (String.length source) (String.get source)
+;;
+
+let list_to_string (xs: char list): string =
+  String.of_seq (List.to_seq xs)
+;;
+
+let get_words_list (source: string): string list =
+
+  let is_separator (ch: char): bool = Char.Ascii.is_white ch in
+
+  let acc_to_string (acc: char list): string = acc |> List.rev |> List.to_seq |> String.of_seq in
+
+  let rec loop (acc: char list) (xs: char list): string list =
+    match xs with
+    | [] -> []
+    | x :: [] ->
+       begin
+         match is_separator x, acc with
+         | true, [] -> []
+         | true, _ -> acc_to_string acc :: []
+         | false, _ -> acc_to_string (x :: acc) :: []
+       end
+    | x :: xt ->
+       match is_separator x, acc with
+       | true, [] -> loop acc xt
+       | true, _ -> acc_to_string acc :: loop [] xt
+       | false, _ -> loop (x :: acc) xt
+  in
+
+  let src = string_to_list source in
+  loop [] src
+;;
+
+let count_words (file_path: string): unit =
+  let in_chan = In_channel.open_bin file_path in
+
+  let str_file = In_channel.input_all in_chan in
+  close_in in_chan;
+
+  let words = get_words_list str_file in
+  let count = List.length words in
+
+  Printf.printf "%d %s\n" count file_path
 ;;
 
 let get_file_path (args: string array): string option =
@@ -83,6 +131,7 @@ let process_other_args (args: string array): unit =
       match args.(i) with
       | "-c" | "--bytes" -> count_bytes file_path
       | "-l" | "--lines" -> count_lines file_path
+      | "-w" | "--words" -> count_words file_path
       | _ -> loop (i + 1) args file_path
   in
 
