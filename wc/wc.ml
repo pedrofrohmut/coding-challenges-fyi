@@ -61,20 +61,29 @@ let count_bytes (file_path: string): unit =
   Printf.printf "%d %s\n" num_bytes file_path
 ;;
 
+let count_lines (file_path: string): unit =
+  let in_chan = In_channel.open_bin file_path in
+
+  let lines = In_channel.input_lines in_chan in
+
+  Printf.printf "%d %s\n" (List.length lines) file_path
+;;
+
 let get_file_path (args: string array): string option =
   let arr = Array.sub args 1 (Array.length args - 1) in
   Array.find_opt (fun arg -> not (String.starts_with ~prefix:"-" arg)) arr
 ;;
 
 let process_other_args (args: string array): unit =
-  let rec loop i args path =
+  let rec loop i args file_path =
     let len = Array.length args in
     if i = len then
       print_endline "Args exausted and no flag found"
     else
       match args.(i) with
-      | "-c" | "--bytes" -> count_bytes path
-      | _ -> loop (i + 1) args path
+      | "-c" | "--bytes" -> count_bytes file_path
+      | "-l" | "--lines" -> count_lines file_path
+      | _ -> loop (i + 1) args file_path
   in
 
   let file_path = get_file_path Sys.argv in
