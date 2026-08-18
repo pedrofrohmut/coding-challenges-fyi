@@ -65,16 +65,20 @@ let test_wc_count_words (my_cmd: string) (file: string): unit =
 
 let () =
   let my_wc = "./_build/default/wc.exe" in
-  let file = "./man_wc.txt" in
+  let man_file = "./man_wc.txt" in
+  let test_file = "./test.txt" in
 
   (* Step One *)
-  test_wc_count_bytes my_wc file;
+  test_wc_count_bytes my_wc man_file;
+  test_wc_count_bytes my_wc test_file;
 
   (* Step Two *)
-  test_wc_count_lines my_wc file;
+  test_wc_count_lines my_wc man_file;
+  test_wc_count_lines my_wc test_file;
 
   (* Step Three *)
-  test_wc_count_words my_wc file;
+  test_wc_count_words my_wc man_file;
+  test_wc_count_words my_wc test_file;
 
   print_endline "All test passed with not errors"
 ;;

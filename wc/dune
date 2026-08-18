@@ -1,1 +1,2 @@
-(executable (name wc))
+(executable
+  (name wc))
