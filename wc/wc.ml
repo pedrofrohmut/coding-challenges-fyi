@@ -184,6 +184,7 @@ let count_lines_words_and_bytes (file_path: string): unit =
   let in_chan = In_channel.open_bin file_path in
 
   let str_file = In_channel.input_all in_chan in
+  close_in in_chan;
 
   let lines_count = count_lines_from_string str_file in
   let words_count = count_words_from_string str_file in
