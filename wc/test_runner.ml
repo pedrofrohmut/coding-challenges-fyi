@@ -43,14 +43,6 @@ let e2e_test (cmd_a: string) (cmd_b: string): unit =
     match_output_lines wc_lines my_lines
 ;;
 
-let test_help (my_cmd: string): unit =
-  e2e_test "wc --help" (my_cmd ^ " --help")
-;;
-
-let test_version (my_cmd: string): unit =
-  e2e_test "wc --version" (my_cmd ^ " --version")
-;;
-
 let test_wc_count_bytes (my_cmd: string) (file: string): unit =
   e2e_test ("wc --bytes " ^ file) (my_cmd ^ " --bytes " ^ file)
 ;;
@@ -92,9 +84,9 @@ let () =
   test_wc_count_chars my_wc man_file;
   test_wc_count_chars my_wc test_file;
 
-  (* (\* Step Five *\) *)
-  (* test_wc_count_lines_words_and_bytes my_wc man_file; *)
-  (* test_wc_count_lines_words_and_bytes my_wc test_file; *)
+  (* Step Five *)
+  test_wc_count_lines_words_and_bytes my_wc man_file;
+  test_wc_count_lines_words_and_bytes my_wc test_file;
 
   print_endline "All test passed with not errors"
 ;;

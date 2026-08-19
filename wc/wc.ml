@@ -144,10 +144,21 @@ let show_count_chars (file_path: string option) (file_str: string): unit =
   Printf.printf "%d %s\n" count path
 ;;
 
+let show_count_lines_words_and_bytes (file_path: string option) (file_str: string): unit =
+  let lines_count = count_lines_from_string file_str in
+  let words_count = count_words_from_string file_str in
+  let bytes_count = count_bytes_from_string file_str in
+  let path =  (Option.value ~default:"" file_path) in
+
+  Printf.printf "  %d  %d %d %s\n" lines_count words_count bytes_count path
+;;
+
 let procress_args_flags (file_path: string option) (file_str: string) (args: string array): unit =
   let rec loop i args file_str =
     if i = Array.length args then
-      failwith "TODO: show_count_lines_words_and_bytes file_str"
+      (* Only get here if no valid flags provided *)
+      show_count_lines_words_and_bytes file_path file_str
+
     else
       match args.(i) with
       | "-c" | "--bytes" -> show_count_bytes file_path file_str
