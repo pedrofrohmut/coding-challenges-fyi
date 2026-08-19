@@ -29,7 +29,7 @@ let get_string_from_stdin (): string =
 
 let count_bytes_from_string (source: string): int =
   (* In ocaml String.length count the bytes. Using Bytes.length would need convertion first *)
-  String.length file_str
+  String.length source
 ;;
 
 
@@ -53,6 +53,49 @@ let show_count_lines (file_path: string option) (file_str: string): unit =
   Printf.printf "%d %s\n" count path
 ;;
 
+let string_to_list (source: string): char list =
+  List.init (String.length source) (fun i -> String.get source i)
+;;
+
+let get_words_list (source: string): string list =
+
+  let is_separator (ch: char): bool = Char.Ascii.is_white ch in
+
+  let acc_to_string (acc: char list): string = acc |> List.rev |> List.to_seq |> String.of_seq in
+
+  let rec loop (acc: char list) (xs: char list): string list =
+    match xs with
+    | [] -> []
+    | x :: [] ->
+       begin
+         match is_separator x, acc with
+         | true, [] -> []
+         | true, _ -> acc_to_string acc :: []
+         | false, _ -> acc_to_string (x :: acc) :: []
+       end
+    | x :: xt ->
+       match is_separator x, acc with
+       | true, [] -> loop acc xt
+       | true, _ -> acc_to_string acc :: loop [] xt
+       | false, _ -> loop (x :: acc) xt
+  in
+
+  let src = string_to_list source in
+  loop [] src
+;;
+
+let count_words_from_string (source: string): int =
+  let words = get_words_list source in
+  List.length words
+;;
+
+let show_count_words (file_path: string option) (file_str: string): unit =
+  let count = count_words_from_string file_str in
+  let path =  (Option.value ~default:"" file_path) in
+
+  Printf.printf "%d %s\n" count path
+;;
+
 let procress_args_flags (file_path: string option) (file_str: string) (args: string array): unit =
   let rec loop i args file_str =
     if i = Array.length args then
@@ -61,7 +104,7 @@ let procress_args_flags (file_path: string option) (file_str: string) (args: str
       match args.(i) with
       | "-c" | "--bytes" -> show_count_bytes file_path file_str
       | "-l" | "--lines" -> show_count_lines file_path file_str
-      | "-w" | "--words" -> failwith "TODO: show_count_words file_str"
+      | "-w" | "--words" -> show_count_words file_path file_str
       | "-m" | "--chars" -> failwith "TODO: show_count_chars file_str"
       | _ -> loop (i + 1) args file_str
   in
