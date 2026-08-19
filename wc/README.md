@@ -1,23 +1,32 @@
-# WC in ocaml
+# WC in OCaml
 
-all the source code is in `wc.ml` and the the tests in the `test_runner.ml`.
+All source code is located in `wc.ml` and the the end-to-end tests are in `test_runner.ml`.
 
-You can run the tests with:
+Build with:
 
 ```sh
-$ dune build && ./test_runner.ml
+$ dune build
 ```
 
-All you can run the code with the symlink `my_wc`
+Run the tests with:
+
+```sh
+$ ./test_runner.ml
+```
+
+You can run the code with the symlink `my_wc`:
 
 ```sh
 $ ./my_wc --lines test.txt
 ```
 
-Or with dune with
+Run with Dune:
 
 ```sh
 $ dune exec ./wc.exe -- --lines test.txt
 ```
 
-This code follows the challenge in (Challenge WC)[https://codingchallenges.fyi/challenges/challenge-wc/].
+This code follows the challenge in [Challenge WC](https://codingchallenges.fyi/challenges/challenge-wc/).
+
+Note: all code was tested on Arch Linux, in Zsh, with Opam installed via pacman
+(Arch package manager), and with `eval "$(opam env)"` in `.zshrc` (Zsh config file).
