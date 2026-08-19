@@ -63,6 +63,14 @@ let test_wc_count_words (my_cmd: string) (file: string): unit =
   e2e_test ("wc --words " ^ file) (my_cmd ^ " --words " ^ file)
 ;;
 
+let test_wc_count_chars (my_cmd: string) (file: string): unit =
+  e2e_test ("wc --chars " ^ file) (my_cmd ^ " --chars " ^ file)
+;;
+
+let test_wc_count_lines_words_and_bytes (my_cmd: string) (file: string): unit =
+  e2e_test ("wc " ^ file) (my_cmd ^ " " ^ file)
+;;
+
 let () =
   let my_wc = "./_build/default/wc.exe" in
   let man_file = "./man_wc.txt" in
@@ -79,6 +87,14 @@ let () =
   (* Step Three *)
   test_wc_count_words my_wc man_file;
   test_wc_count_words my_wc test_file;
+
+  (* Step Four *)
+  test_wc_count_chars my_wc man_file;
+  test_wc_count_chars my_wc test_file;
+
+  (* Step Five *)
+  test_wc_count_lines_words_and_bytes my_wc man_file;
+  test_wc_count_lines_words_and_bytes my_wc test_file;
 
   print_endline "All test passed with not errors"
 ;;
