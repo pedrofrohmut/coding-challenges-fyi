@@ -42,7 +42,9 @@ let show_count_bytes (file_path: string option) (file_str: string): unit =
 
 let count_lines_from_string (source: string): int =
   let char_list = List.init (String.length source) (fun i -> String.get source i) in
-  List.fold_left (fun acc ch -> if ch = '\n' then (acc + 1) else acc) 0 char_list
+  List.fold_left (fun acc ch ->
+      if ch = '\n' then (acc + 1) else acc
+    ) 0 char_list
 ;;
 
 
@@ -96,6 +98,52 @@ let show_count_words (file_path: string option) (file_str: string): unit =
   Printf.printf "%d %s\n" count path
 ;;
 
+(**
+  Character Length  |  Valid First Byte Range (hex)  |  Reason / Constraint
+  -------------------------------------------------------------------------------------------------------------------------------
+  1-byte (ASCII)    | 0x00 - 0x7F                    |   Standard ASCII compatibility.
+  2-byte            | 0xC2 - 0xDF                    |   0xC0 and 0xC1 are invalid (overlong encoding).
+  3-byte            | 0xE0 - 0xEF                    |   Followed by 0xA0-BF if 0xE0; 0x80-9F if 0xED (surrogate avoidance).
+  4-byte            | 0xF0 - 0xF4                    |   0xF5 and above are invalid; 0xF0 requires 0x90-BF; 0xF4 requires 0x80-8F.
+*)
+let count_chars_from_string (source: string): int =
+  let min_2bytes = 0xC2 in
+  let min_3bytes = 0xE0 in
+  let min_4bytes = 0xF0 in
+
+  let rec loop i len src =
+    if i = len then
+      0
+    else
+      (* String.get wont return all the bytes of non-ascii characters with more than 1 byte.
+         only the first byte of these characters. *)
+      let code = Char.code (String.get src i) in
+
+      (* Ajust the increment based in character length *)
+      let increment =
+        if code < min_2bytes then
+          1
+        else if code < min_3bytes then
+          2
+        else if code < min_4bytes then
+          3
+        else
+          4
+      in
+
+      1 + loop (i + increment) len src
+  in
+
+  loop 0 (String.length source) source
+;;
+
+let show_count_chars (file_path: string option) (file_str: string): unit =
+  let count = count_chars_from_string file_str in
+  let path =  (Option.value ~default:"" file_path) in
+
+  Printf.printf "%d %s\n" count path
+;;
+
 let procress_args_flags (file_path: string option) (file_str: string) (args: string array): unit =
   let rec loop i args file_str =
     if i = Array.length args then
@@ -105,7 +153,7 @@ let procress_args_flags (file_path: string option) (file_str: string) (args: str
       | "-c" | "--bytes" -> show_count_bytes file_path file_str
       | "-l" | "--lines" -> show_count_lines file_path file_str
       | "-w" | "--words" -> show_count_words file_path file_str
-      | "-m" | "--chars" -> failwith "TODO: show_count_chars file_str"
+      | "-m" | "--chars" -> show_count_chars file_path file_str
       | _ -> loop (i + 1) args file_str
   in
 
