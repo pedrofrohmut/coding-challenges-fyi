@@ -198,7 +198,7 @@ let get_file_path (args: string array): string option =
   Array.find_opt (fun arg -> not (String.starts_with ~prefix:"-" arg)) arr
 ;;
 
-let process_other_args (args: string array): unit =
+let process_other_args ?(str_file: string option) (args: string array): unit =
   let rec loop i args file_path =
     let len = Array.length args in
     if i = len then
@@ -213,10 +213,19 @@ let process_other_args (args: string array): unit =
   in
 
   let file_path = get_file_path Sys.argv in
+
   if Option.is_none file_path then
     failwith "File path not provided."
   else
     loop 1 Sys.argv (Option.get file_path)
+;;
+
+let rec read_stdin () =
+  try
+    let line = read_line () in
+    line :: read_stdin ()
+  with
+    End_of_file -> []
 ;;
 
 let main () =
@@ -224,19 +233,25 @@ let main () =
   let no_args = 1 in
 
   if len = no_args then
-    failwith "Not implemented: no args";
-
-  let help_found = Array.find_opt (fun x -> x = "-h" || x = "--help") Sys.argv in
-  if Option.is_some help_found then
-    show_help ()
+    let lines = read_stdin () in
+    let _str_file =  String.concat "\n" lines in
+    (* TODO: refactor process_other_args to accept str_file. also change the
+       counter to accept the str_file instead of the the file_path. It's easy
+       just look at `count_lines_words_and_bytes` *)
+    ()
 
   else
-    let version_found = Array.find_opt (fun x -> x = "-v" || x = "--version") Sys.argv in
-    if Option.is_some version_found then
-      show_version ()
+    let help_found = Array.find_opt (fun x -> x = "-h" || x = "--help") Sys.argv in
+    if Option.is_some help_found then
+      show_help ()
 
     else
-      process_other_args Sys.argv
+      let version_found = Array.find_opt (fun x -> x = "-v" || x = "--version") Sys.argv in
+      if Option.is_some version_found then
+        show_version ()
+
+      else
+        process_other_args Sys.argv
 ;;
 
 let () =
