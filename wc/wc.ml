@@ -35,9 +35,10 @@ let count_bytes_from_string (source: string): int =
 
 let show_count_bytes (file_path: string option) (file_str: string): unit =
   let count = count_bytes_from_string file_str in
-  let path =  (Option.value ~default:"" file_path) in
 
-  Printf.printf "%d %s\n" count path
+  match file_path with
+  | Some path -> Printf.printf "%d %s\n" count path
+  | None ->  Printf.printf "%d\n" count
 ;;
 
 let count_lines_from_string (source: string): int =
@@ -50,9 +51,10 @@ let count_lines_from_string (source: string): int =
 
 let show_count_lines (file_path: string option) (file_str: string): unit =
   let count = count_lines_from_string file_str in
-  let path =  (Option.value ~default:"" file_path) in
 
-  Printf.printf "%d %s\n" count path
+  match file_path with
+  | Some path -> Printf.printf "%d %s\n" count path
+  | None ->  Printf.printf "%d\n" count
 ;;
 
 let string_to_list (source: string): char list =
@@ -93,9 +95,10 @@ let count_words_from_string (source: string): int =
 
 let show_count_words (file_path: string option) (file_str: string): unit =
   let count = count_words_from_string file_str in
-  let path =  (Option.value ~default:"" file_path) in
 
-  Printf.printf "%d %s\n" count path
+  match file_path with
+  | Some path -> Printf.printf "%d %s\n" count path
+  | None ->  Printf.printf "%d\n" count
 ;;
 
 (**
@@ -139,18 +142,20 @@ let count_chars_from_string (source: string): int =
 
 let show_count_chars (file_path: string option) (file_str: string): unit =
   let count = count_chars_from_string file_str in
-  let path =  (Option.value ~default:"" file_path) in
 
-  Printf.printf "%d %s\n" count path
+  match file_path with
+  | Some path -> Printf.printf "%d %s\n" count path
+  | None ->  Printf.printf "%d\n" count
 ;;
 
 let show_count_lines_words_and_bytes (file_path: string option) (file_str: string): unit =
   let lines_count = count_lines_from_string file_str in
   let words_count = count_words_from_string file_str in
   let bytes_count = count_bytes_from_string file_str in
-  let path =  (Option.value ~default:"" file_path) in
 
-  Printf.printf "  %d  %d %d %s\n" lines_count words_count bytes_count path
+  match file_path with
+  | Some path -> Printf.printf "%d %d %d %s\n" lines_count words_count bytes_count path
+  | None ->      Printf.printf "%d %d %d\n" lines_count words_count bytes_count
 ;;
 
 let procress_args_flags (file_path: string option) (file_str: string) (args: string array): unit =

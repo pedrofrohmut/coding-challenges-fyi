@@ -2,19 +2,31 @@
 
 #directory "+unix";;
 
+let clean_whites (source: string) =
+  source
+  |> String.to_seq
+  |> Seq.filter (fun ch -> not (Char.Ascii.is_white ch))
+  |> String.of_seq
+;;
+
 let rec match_output_lines (a_lines: string list) (b_lines: string list): unit =
   match a_lines, b_lines with
   | [], [] -> ()
 
-  | [], _ | _, [] -> failwith "Unmatch: Output have different number of lines"
+  | [], _ | _, [] -> failwith "Unmatched: Outputs have different number of lines."
 
   | a :: at, b :: bt ->
-     if a = b then
+
+     (* Clean white spaces to avoid problem with inconsistent white spaces *)
+     let clean_a = clean_whites a in
+     let clean_b = clean_whites b in
+
+     if clean_a = clean_b then
        match_output_lines at bt
      else
        begin
          prerr_endline @@ Printf.sprintf "Lines are different. \n\twc: `%s` \n\tmy: `%s`\n" a b;
-         failwith "Unmatched lines in outputs"
+         failwith "Unmatched lines in outputs."
        end
 ;;
 
@@ -44,23 +56,28 @@ let e2e_test (cmd_a: string) (cmd_b: string): unit =
 ;;
 
 let test_wc_count_bytes (my_cmd: string) (file: string): unit =
-  e2e_test ("wc --bytes " ^ file) (my_cmd ^ " --bytes " ^ file)
+  e2e_test ("wc --bytes " ^ file) (my_cmd ^ " --bytes " ^ file);
+  e2e_test ("cat " ^ file ^ " | wc --bytes") ("cat " ^ file ^ " | " ^ my_cmd ^ " --bytes ")
 ;;
 
 let test_wc_count_lines (my_cmd: string) (file: string): unit =
-  e2e_test ("wc --lines " ^ file) (my_cmd ^ " --lines " ^ file)
+  e2e_test ("wc --lines " ^ file) (my_cmd ^ " --lines " ^ file);
+  e2e_test ("cat " ^ file ^ " | wc --lines") ("cat " ^ file ^ " | " ^ my_cmd ^ " --lines ")
 ;;
 
 let test_wc_count_words (my_cmd: string) (file: string): unit =
-  e2e_test ("wc --words " ^ file) (my_cmd ^ " --words " ^ file)
+  e2e_test ("wc --words " ^ file) (my_cmd ^ " --words " ^ file);
+  e2e_test ("cat " ^ file ^ " | wc --words") ("cat " ^ file ^ " | " ^ my_cmd ^ " --words ")
 ;;
 
 let test_wc_count_chars (my_cmd: string) (file: string): unit =
-  e2e_test ("wc --chars " ^ file) (my_cmd ^ " --chars " ^ file)
+  e2e_test ("wc --chars " ^ file) (my_cmd ^ " --chars " ^ file);
+  e2e_test ("cat " ^ file ^ " | wc --chars") ("cat " ^ file ^ " | " ^ my_cmd ^ " --chars ")
 ;;
 
 let test_wc_count_lines_words_and_bytes (my_cmd: string) (file: string): unit =
-  e2e_test ("wc " ^ file) (my_cmd ^ " " ^ file)
+  e2e_test ("wc " ^ file) (my_cmd ^ " " ^ file);
+  e2e_test ("cat " ^ file ^ " | wc") ("cat " ^ file ^ " | " ^ my_cmd)
 ;;
 
 let () =
