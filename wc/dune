@@ -1,2 +1,3 @@
 (executable
-  (name wc))
+  (name wc)
+  (libraries unix))
