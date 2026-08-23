@@ -1,7 +1,5 @@
-open Token_type
-
 type t = {
-  token_type: Token_type.t;
+  token_type: TokenType.t;
   literal: string;
 }
 

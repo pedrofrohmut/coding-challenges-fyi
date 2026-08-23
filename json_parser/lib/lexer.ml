@@ -16,8 +16,8 @@ let next_token t =
 
   let token =
     match ch with
-    | '{' -> Token.create Token_type.OpenBrace "{"
-    | '}' -> Token.create Token_type.CloseBrace "}"
+    | '{' -> Token.create TokenType.OpenBrace "{"
+    | '}' -> Token.create TokenType.CloseBrace "}"
     | _ -> failwith "Not implemented token match"
   in
 
