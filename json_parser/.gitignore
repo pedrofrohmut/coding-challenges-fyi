@@ -1,0 +1,8 @@
+_build/
+
+.*.swp
+*.swp
+
+*~
+\#*\#
+.projectile
