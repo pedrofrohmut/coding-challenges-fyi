@@ -18,12 +18,17 @@ let () =
   else
     let input = args.(1) in
 
-    if parse_input input then (
+    try
+      let result = parse_input input in
+
+      if result  then (
         print_endline "Everything is okay.";
         exit 0
       )
 
-    else (
+      else (
         print_endline "Error: error found parsing the input.";
         exit 1
       )
+    with
+      Failure msg -> Printf.printf "Some Error: `%s`\n" msg; exit 1

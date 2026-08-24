@@ -4,5 +4,3 @@ type t = {
 }
 
 let create token_type literal = { token_type; literal }
-
-let get_literal t = t.literal
