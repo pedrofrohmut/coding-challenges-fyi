@@ -1,5 +1,4 @@
 type t =
-
   | OpenBrace
   | CloseBrace
   | OpenBracket
@@ -9,3 +8,14 @@ type t =
   | Comma
 
   | String
+
+let to_string = function
+  | OpenBrace -> "OpenBrace"
+  | CloseBrace -> "CloseBrace"
+  | OpenBracket -> "OpenBracket"
+  | CloseBracket -> "CloseBracket"
+
+  | Colon -> "Colon"
+  | Comma -> "Comma"
+
+  | String -> "String"
