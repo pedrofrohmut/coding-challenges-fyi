@@ -13,7 +13,7 @@ let test_step1_valid () =
   let result = Parser.parse_input parser in
 
   if result then () else (
-    print_endline "Failed step1";
+    print_endline "Error: Failed step1 valid";
     exit 1
   )
 
@@ -25,15 +25,16 @@ let test_step1_invalid () =
   let result = Parser.parse_input parser in
 
   if not result then () else (
-    print_endline "Failed step1";
+    print_endline "Error: Failed step1 invalid";
     exit 1
   )
 
 let test_step2_valid () =
   let input = "{\"key\":\"value\"}" in
+
   let result = parse_input input in
 
-  if not result then () else (
+  if result then () else (
     print_endline "Error: Failed step2 valid";
     exit 1
   )
@@ -41,5 +42,5 @@ let test_step2_valid () =
 let () =
   test_step1_valid ();
   test_step1_invalid ();
-  (* test_step2_valid (); *)
+  test_step2_valid ();
   exit 0

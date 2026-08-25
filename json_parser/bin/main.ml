@@ -1,8 +1,8 @@
 open Json_parser
 
 let parse_input input =
-  let lexer = Lexer.create(input) in
-  let parser = Parser.create(lexer) in
+  let lexer = Lexer.create input in
+  let parser = Parser.create lexer in
   Parser.parse_input parser
 
 let () =

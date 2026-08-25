@@ -5,8 +5,6 @@ type t =
   | OpenBracket
   | CloseBracket
 
-  | Key
-
   | Colon
   | Comma
 
