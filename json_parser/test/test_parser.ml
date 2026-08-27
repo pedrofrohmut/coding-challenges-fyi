@@ -32,4 +32,7 @@ let test_parser_step2_valid () =
   )
 
 let run () =
+  test_parser_step1_valid ();
+  test_parser_step1_invalid ();
+  test_parser_step2_valid ();
   print_endline "✓ SUCCESS: All Parser tests passed."
