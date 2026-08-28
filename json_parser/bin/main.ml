@@ -1,14 +1,5 @@
 open Json_parser
 
-let rec print_all_tokens lexer =
-  let lexer, token = Lexer.next_token lexer in
-  match token with
-  | None -> ()
-  | Some token -> (
-    Token.print_token token;
-    print_all_tokens lexer
-  )
-
 let () =
   let args = Sys.argv in
   let len = Array.length args in
@@ -24,7 +15,7 @@ let () =
 
     let lexer = Lexer.create input in
 
-    print_all_tokens lexer;
+    Lexer.print_all_tokens lexer;
 
     try
       let parser = Parser.create lexer in

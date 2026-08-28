@@ -41,6 +41,7 @@ let test_lexer_step1_valid () =
   let result = check_tokens expected_tokens lexer in
 
   if result then () else (
+    Lexer.print_all_tokens lexer;
     print_endline "✗ FAIL: Failed step1 valid";
     exit 1
   )
@@ -55,6 +56,7 @@ let test_lexer_step1_invalid () =
   let result = check_tokens expected_tokens lexer in
 
   if result then () else (
+    Lexer.print_all_tokens lexer;
     print_endline "✗ FAIL: Failed step1 invalid";
     exit 1
   )
@@ -75,7 +77,80 @@ let test_lexer_step2_valid () =
   let result = check_tokens expected_tokens lexer in
 
   if result then () else (
+    Lexer.print_all_tokens lexer;
     print_endline "✗ FAIL: Failed step2 valid";
+    exit 1
+  )
+
+let test_lexer_step2_valid2 () =
+  let input = get_input_from_file "test/json_inputs/step2/valid2.json" in
+  let lexer = Lexer.create input in
+
+  let expected_tokens = [
+      TokenType.OpenBrace;
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.CloseBrace;
+    ] in
+
+  let result = check_tokens expected_tokens lexer in
+
+  if result then () else (
+    Lexer.print_all_tokens lexer;
+    print_endline "✗ FAIL: Failed step2 valid2";
+    exit 1
+  )
+
+let test_lexer_step2_invalid () =
+  let input = get_input_from_file "test/json_inputs/step2/invalid.json" in
+  let lexer = Lexer.create input in
+
+  let expected_tokens = [
+      TokenType.OpenBrace;
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+      TokenType.CloseBrace;
+    ] in
+
+  let result = check_tokens expected_tokens lexer in
+
+  if result then () else (
+    Lexer.print_all_tokens lexer;
+    print_endline "✗ FAIL: Failed step2 invalid";
+    exit 1
+  )
+
+let test_lexer_step2_invalid2 () =
+  let input = get_input_from_file "test/json_inputs/step2/invalid2.json" in
+  let lexer = Lexer.create input in
+
+  let expected_tokens = [
+      TokenType.OpenBrace;
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+      TokenType.Unknown;
+      TokenType.Unknown;
+      TokenType.Unknown;
+      TokenType.Unknown;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.CloseBrace;
+    ] in
+
+  let result = check_tokens expected_tokens lexer in
+
+  if result then () else (
+    Lexer.print_all_tokens lexer;
+    print_endline "✗ FAIL: Failed step2 invalid2";
     exit 1
   )
 
@@ -83,4 +158,7 @@ let run () =
   test_lexer_step1_valid ();
   test_lexer_step1_invalid ();
   test_lexer_step2_valid ();
+  test_lexer_step2_valid2 ();
+  test_lexer_step2_invalid ();
+  test_lexer_step2_invalid2 ();
   print_endline "✓ SUCCESS: All lexer tests passed."

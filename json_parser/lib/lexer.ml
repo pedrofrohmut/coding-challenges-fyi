@@ -73,13 +73,24 @@ let rec next_token lexer =
          | '{' -> lexer, Token.create TokenType.OpenBrace "{"
          | '}' -> lexer, Token.create TokenType.CloseBrace "}"
          | ':' -> lexer, Token.create TokenType.Colon ":"
+         | ',' -> lexer, Token.create TokenType.Comma ","
          | '"' ->
             let lexer, value = read_string lexer in
             let token = Token.create TokenType.String value in
             lexer, token
-         | _ -> (
-           Printf.printf "ERROR - Lexer next_token: Not implemented match for `%c`\n" ch;
-           failwith "Not implemented token match"
-         )
+         | _ -> lexer, Token.create TokenType.Unknown (Char.escaped ch)
+         (*    ( *)
+         (*   Printf.printf "ERROR - Lexer next_token: Not implemented match for `%c`\n" ch; *)
+         (*   failwith "Not implemented token match" *)
+         (* ) *)
        in
        incr_cursor lexer, Some token
+
+let rec print_all_tokens lexer =
+  let lexer, token = next_token lexer in
+  match token with
+  | None -> ()
+  | Some token -> (
+    Token.print_token token;
+    print_all_tokens lexer
+  )

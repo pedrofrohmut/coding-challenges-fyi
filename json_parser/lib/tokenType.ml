@@ -8,6 +8,7 @@ type t =
   | Comma
 
   | String
+  | Unknown
 
 let to_string = function
   | OpenBrace -> "OpenBrace"
@@ -19,3 +20,4 @@ let to_string = function
   | Comma -> "Comma"
 
   | String -> "String"
+  | Unknown -> "Unknown"
