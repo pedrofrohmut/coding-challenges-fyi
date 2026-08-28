@@ -31,8 +31,19 @@ let test_parser_step2_valid () =
     exit 1
   )
 
+let test_parser_step2_valid2 () =
+  let input = get_input_from_file "test/json_inputs/step2/valid2.json" in
+
+  let result = parse_input input in
+
+  if result then () else (
+    print_endline "✗ FAIL: Failed step2 valid2";
+    exit 1
+  )
+
 let run () =
   test_parser_step1_valid ();
   test_parser_step1_invalid ();
   test_parser_step2_valid ();
+  (* test_parser_step2_valid2 (); *)
   print_endline "✓ SUCCESS: All Parser tests passed."

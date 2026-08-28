@@ -1,4 +1,5 @@
 (executable
  (public_name json_parser)
  (name main)
+ (modes byte exe)
  (libraries json_parser))
