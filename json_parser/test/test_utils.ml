@@ -7,7 +7,7 @@ let parse_input input =
 
 let prefix_path file_path =
   let cwd = Sys.getcwd () in
-  let res = String.split_first ~sep:"_build" cwd in
+  let res = Utils.split_string "_build" cwd in
 
   if Option.is_none res then (
     prerr_endline "Cwd does not contain the _build folder. This function won't know where to split the path.";
@@ -25,6 +25,7 @@ let get_input_from_file file_path =
   );
 
   let full_path = prefix_path file_path in
+  (* Printf.printf "Full path -> `%s`\n" full_path; *)
 
   if not (Sys.file_exists full_path) then (
     prerr_endline "ERROR: File path will be prefixed with the `<project root>/`. Make sure to follow this pattern";

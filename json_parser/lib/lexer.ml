@@ -1,3 +1,5 @@
+open Utils
+
 type t = {
     cursor: int;
     input: string;
@@ -64,7 +66,7 @@ let rec next_token lexer =
   match init_ch with
   | None -> lexer, None
   | Some ch ->
-     if Char.Ascii.is_white ch then
+     if Utils.is_whitespace ch then
        next_token (incr_cursor lexer)
      else
        let lexer, token =

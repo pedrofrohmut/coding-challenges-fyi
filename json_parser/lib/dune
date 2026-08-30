@@ -1,3 +1,3 @@
 (library
  (name json_parser)
- (modules lexer parser token tokenType))
+ (modules lexer parser token tokenType utils))

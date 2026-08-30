@@ -17,6 +17,9 @@ let () =
 
     Lexer.print_all_tokens lexer;
 
+    (* let parser = Parser.create lexer in *)
+    (* Parser.parse_input parser *)
+
     try
       let parser = Parser.create lexer in
       let result = Parser.parse_input parser in
