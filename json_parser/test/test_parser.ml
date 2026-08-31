@@ -46,6 +46,17 @@ let test_parser_step2_valid2 () =
     exit 1
   )
 
+let test_parser_step2_valid2 () =
+  let input = get_input_from_file "test/json_inputs/step2/valid3.json" in
+  (* printf "Input -> `%s`\n" input; *)
+
+  let result = parse_input input in
+
+  if result then () else (
+    print_endline "✗ FAIL: Failed step2 valid3";
+    exit 1
+  )
+
 let run () =
   test_parser_step1_valid ();
   test_parser_step1_invalid ();
