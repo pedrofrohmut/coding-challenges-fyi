@@ -106,6 +106,48 @@ let test_lexer_step2_valid2 () =
     exit 1
   )
 
+let test_lexer_step2_valid3 () =
+  let input = get_input_from_file "test/json_inputs/step2/valid3.json" in
+  let lexer = Lexer.create input in
+
+  let expected_tokens = [
+      TokenType.OpenBrace;
+
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+      TokenType.Comma;
+
+      TokenType.String;
+      TokenType.Colon;
+      TokenType.String;
+
+      TokenType.CloseBrace;
+    ] in
+
+  let result = check_tokens expected_tokens lexer in
+
+  if result then () else (
+    Lexer.print_all_tokens lexer;
+    print_endline "✗ FAIL: Failed step2 valid3";
+    exit 1
+  )
+
 let test_lexer_step2_invalid () =
   let input = get_input_from_file "test/json_inputs/step2/invalid.json" in
   let lexer = Lexer.create input in
