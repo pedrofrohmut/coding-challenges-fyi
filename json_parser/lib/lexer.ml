@@ -58,7 +58,27 @@ let read_string lexer =
   let lexer = cursor_to end_pos lexer in
   let content = String.sub lexer.input start_pos (end_pos - start_pos) in
 
-  (* Return lexer at ending '"' and string content *)
+  (* Return lexer.cursor at ending '"' and string content *)
+  lexer, content
+
+let read_unknown lexer =
+  let rec loop i lx =
+    let ch = get_ch_at i lx in
+    match ch with
+    | None -> failwith "Lexer - read_string: Unexpected end of input"
+    | Some v ->
+        if Utils.is_closing_char v then
+          i
+        else
+          loop (i + 1) lx
+  in
+
+  let start_pos = lexer.cursor in
+  let end_pos = loop start_pos lexer in (* closing character position *)
+  let lexer = cursor_to (end_pos - 1) lexer in
+  let content = String.sub lexer.input start_pos (end_pos - start_pos) in
+
+  (* Return lexer.cursor at the closing character position - 1 *)
   lexer, content
 
 let rec next_token lexer =
@@ -80,11 +100,16 @@ let rec next_token lexer =
             let lexer, value = read_string lexer in
             let token = Token.create TokenType.String value in
             lexer, token
-         | _ -> lexer, Token.create TokenType.Unknown (Char.escaped ch)
-         (*    ( *)
-         (*   Printf.printf "ERROR - Lexer next_token: Not implemented match for `%c`\n" ch; *)
-         (*   failwith "Not implemented token match" *)
-         (* ) *)
+         | _ ->
+             let lexer, value = read_unknown lexer in
+             match value with
+             | "true" | "false" -> lexer, Token.create TokenType.Bool value
+             | "null" -> lexer, Token.create TokenType.Null value
+             | _ ->
+                 if Utils.is_number value then
+                   lexer, Token.create TokenType.Number value
+                 else
+                   lexer, Token.create TokenType.Unknown value
        in
        incr_cursor lexer, Some token
 

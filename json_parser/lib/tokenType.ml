@@ -7,8 +7,11 @@ type t =
   | Colon
   | Comma
 
-  | String
   | Unknown
+  | String
+  | Bool
+  | Null
+  | Number
 
 let to_string = function
   | OpenBrace -> "OpenBrace"
@@ -19,5 +22,8 @@ let to_string = function
   | Colon -> "Colon"
   | Comma -> "Comma"
 
-  | String -> "String"
   | Unknown -> "Unknown"
+  | String -> "String"
+  | Bool -> "Bool"
+  | Null -> "Null"
+  | Number -> "Number"

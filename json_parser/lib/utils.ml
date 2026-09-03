@@ -2,6 +2,17 @@ let is_whitespace = function
   | ' ' | '\r' | '\t' | '\n' -> true
   | _ -> false
 
+let is_closing_char = function
+  | ':' | ',' | ']' | '}' | '\n' -> true
+  | _ -> false
+
+let is_number_char = function
+  | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '.' | ',' -> true
+  | _ -> false
+
+let is_number src =
+  not (String.exists (fun ch -> not (is_number_char ch)) src)
+
 let split_string sep src =
   let sep_len = String.length sep in
   let src_len = String.length src in

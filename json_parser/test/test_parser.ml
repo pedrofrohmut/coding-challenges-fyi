@@ -8,7 +8,7 @@ let test_parser_step1_valid () =
   let result = parse_input input in
 
   if result then () else (
-    print_endline "✗ FAIL: Failed step1 valid";
+    print_endline "✗ FAIL: Parser Failed step1 valid";
     exit 1
   )
 
@@ -18,7 +18,7 @@ let test_parser_step1_invalid () =
   let result = parse_input input in
 
   if not result then () else (
-    print_endline "✗ FAIL: Failed step1 invalid";
+    print_endline "✗ FAIL: Parser Failed step1 invalid";
     exit 1
   )
 
@@ -28,7 +28,7 @@ let test_parser_step2_valid () =
   let result = parse_input input in
 
   if result then () else (
-    print_endline "✗ FAIL: Failed step2 valid";
+    print_endline "✗ FAIL: Parser Failed step2 valid";
     exit 1
   )
 
@@ -38,7 +38,7 @@ let test_parser_step2_valid2 () =
   let result = parse_input input in
 
   if result then () else (
-    print_endline "✗ FAIL: Failed step2 valid2";
+    print_endline "✗ FAIL: Parser Failed step2 valid2";
     exit 1
   )
 
@@ -48,7 +48,7 @@ let test_parser_step2_valid3 () =
   let result = parse_input input in
 
   if result then () else (
-    print_endline "✗ FAIL: Failed step2 valid3";
+    print_endline "✗ FAIL: Parser Failed step2 valid3";
     exit 1
   )
 
@@ -58,7 +58,7 @@ let test_parser_step2_invalid () =
   let result = parse_input input in
 
   if not result then () else (
-    print_endline "✗ FAIL: Failed step2 invalid";
+    print_endline "✗ FAIL: Parser Failed step2 invalid";
     exit 1
   )
 
@@ -68,7 +68,7 @@ let test_parser_step2_invalid2 () =
   let result = parse_input input in
 
   if not result then () else (
-    print_endline "✗ FAIL: Failed step2 invalid2";
+    print_endline "✗ FAIL: Parser Failed step2 invalid2";
     exit 1
   )
 
