@@ -61,6 +61,8 @@ let read_string lexer =
   (* Return lexer.cursor at ending '"' and string content *)
   lexer, content
 
+
+(* TODO: Cover case where the Unknown object is length 1 *)
 let read_unknown lexer =
   let rec loop i lx =
     let ch = get_ch_at i lx in
@@ -94,6 +96,8 @@ let rec next_token lexer =
          | '\\' -> failwith "Lexer next_token - Error: Found and back slash."
          | '{' -> lexer, Token.create TokenType.OpenBrace "{"
          | '}' -> lexer, Token.create TokenType.CloseBrace "}"
+         | '[' -> lexer, Token.create TokenType.OpenBracket "["
+         | ']' -> lexer, Token.create TokenType.CloseBracket "]"
          | ':' -> lexer, Token.create TokenType.Colon ":"
          | ',' -> lexer, Token.create TokenType.Comma ","
          | '"' ->
