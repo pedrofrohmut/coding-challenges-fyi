@@ -31,9 +31,8 @@ let is_valid_object_value token =
     false
   else
     let token = Option.get token in
-    (* TODO: Support more types *)
     match token.token_type with
-    | TokenType.String -> true
+    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> true
     | _ -> false
 
 let rec parse_object_body par =
@@ -55,6 +54,7 @@ let rec parse_object_body par =
         let par = parser_next par in (* Curr is comma *)
         let par = parser_next par in (* Curr is next key *)
         parse_object_body par
+
       else
         par
 
