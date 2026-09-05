@@ -24,6 +24,11 @@ let get_input_from_file file_path =
     failwith "Invalid file path"
   );
 
+  if String.starts_with ~prefix:"." file_path then (
+    prerr_endline "ERROR: relative paths are not supported";
+    failwith "Invalid file path"
+  );
+
   let full_path = prefix_path file_path in
   (* Printf.printf "Full path -> `%s`\n" full_path; *)
 

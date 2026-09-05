@@ -38,3 +38,28 @@ let split_string sep src =
         Some (before, rest)
   in
   loop 0
+
+let get_input_from_file file_path =
+  if String.starts_with ~prefix:"/" file_path then (
+    prerr_endline "ERROR: File path must not start with a slash";
+    failwith "Invalid file path"
+  );
+
+  if String.starts_with ~prefix:"." file_path then (
+    prerr_endline "ERROR: relative paths are not supported";
+    failwith "Invalid file path"
+  );
+
+  let prefix = Sys.getcwd () in (* Project root *)
+  let full_path = prefix ^ "/" ^ file_path in
+
+  if not (Sys.file_exists full_path) then (
+    prerr_endline "ERROR: File path will be prefixed with the `<project root>/`. Make sure to follow this pattern";
+    failwith "Input file not found"
+  );
+
+  let in_chan = open_in full_path in
+  let file_str = In_channel.input_all in_chan in
+  close_in in_chan;
+
+  file_str

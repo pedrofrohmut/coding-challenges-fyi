@@ -26,6 +26,10 @@ let try_get_input args =
   )
 
 let () =
+  print_endline "Starting...";
+
+  Array.iteri (fun i a -> Printf.printf "Args[%d]: `%s`\n" i a) Sys.argv;
+
   let args = Sys.argv in
   let input = try_get_input args in
 

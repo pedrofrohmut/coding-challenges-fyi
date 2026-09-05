@@ -26,39 +26,7 @@ let expect_type token expected_type =
 let is_valid_object_key token =
   expect_type token TokenType.String
 
-let is_valid_object_value token =
-  if Option.is_none token then
-    false
-  else
-    let token = Option.get token in
-    match token.token_type with
-    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> true
-    | _ -> false
-
-let rec parse_object_body par =
-  if not (is_valid_object_key par.curr) then
-    failwith "Invalid or missing Object key"
-
-  else
-    let par = parser_next par in
-    if not (expect_type par.curr TokenType.Colon) then
-      failwith "Not a colon after object key"
-
-    else
-      let par = parser_next par in
-      if not (is_valid_object_value par.curr) then
-        failwith "Not a valid object value"
-
-    else
-      if expect_type par.peek TokenType.Comma then
-        let par = parser_next par in (* Curr is comma *)
-        let par = parser_next par in (* Curr is next key *)
-        parse_object_body par
-
-      else
-        par
-
-let parse_object par =
+let rec parse_object par =
   let par = parser_next par in
 
   if expect_type par.curr TokenType.CloseBrace then
@@ -71,12 +39,58 @@ let parse_object par =
     match par.curr with
     | None -> failwith "Unexpected end of object"
     | Some curr_token ->
-      if curr_token.token_type <> TokenType.CloseBrace then
+      if curr_token.token_type <> TokenType.CloseBrace then (
+        print_string "Should be CloseBrace: ";
+        Token.print_token curr_token;
         failwith "Not a CloseBrace after object body"
+      )
       else
         par
 
-let parse_array par =
+and parse_object_body par =
+  if not (is_valid_object_key par.curr) then
+    failwith "Invalid or missing Object key"
+
+  else
+    let par = parser_next par in
+    if not (expect_type par.curr TokenType.Colon) then
+      failwith "Not a colon after object key"
+
+    else
+      let par = parser_next par in
+      if not (is_valid_object_value par.curr par) then
+        failwith "Not a valid object value"
+
+    else
+      if expect_type par.peek TokenType.Comma then
+        let par = parser_next par in (* Curr is comma *)
+        let par = parser_next par in (* Curr is next key *)
+        parse_object_body par
+
+      else
+        par (* Curr is value of key/value pair *)
+
+and is_valid_object_value token par =
+  if Option.is_none token then
+    false
+  else
+    let token = Option.get token in
+    match token.token_type with
+    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> true
+    | TokenType.OpenBrace -> (
+        print_string "Curr is: ";
+        Token.print_token (Option.get par.curr);
+        (* TODO: The parser is immutable so you have to return the parser here *)
+        try ignore (parse_object par); true
+        with Failure _ -> false
+    )
+    | TokenType.OpenBracket -> (
+        try ignore (parse_array par); true
+        with Failure _ -> false
+    )
+    | _ -> false
+
+and parse_array par =
   failwith "TODO: parse_array not implemented"
 
 let parse_input par =
