@@ -7,13 +7,13 @@ type t = {
   }
 
 (* Creates a parser an populate it with the first token *)
-let create lexer =
+let create (lexer: Lexer.t): t =
   let lexer, curr_token = Lexer.next_token lexer in
   let lexer, peek_token = Lexer.next_token lexer in
   { lexer; curr = curr_token; peek = peek_token }
 
 (* Interate the parser to the next token *)
-let parser_next par =
+let parser_next (par: t): t =
   let lexer, token = Lexer.next_token par.lexer in
   { lexer; curr = par.peek; peek = token }
 
@@ -23,17 +23,18 @@ let expect_type token expected_type =
   | Some token ->
      token.token_type = expected_type
 
-let is_valid_object_key token =
+let is_valid_object_key (token: Token.t option): bool =
   expect_type token TokenType.String
 
-let rec parse_object par =
+let rec parse_object (par: t): t * bool =
   let par = parser_next par in
 
   if expect_type par.curr TokenType.CloseBrace then
-    par
+    par, true
 
   else
-    let par = parse_object_body par in
+    (* TODO: Check ok when stuff is not just a bunch of failwith *)
+    let par, _ok = parse_object_body par in
 
     let par = parser_next par in
     match par.curr with
@@ -45,9 +46,10 @@ let rec parse_object par =
         failwith "Not a CloseBrace after object body"
       )
       else
-        par
+        par, true
 
-and parse_object_body par =
+(* TODO: Changes this failwiths for falsee *)
+and parse_object_body (par: t): t * bool =
   if not (is_valid_object_key par.curr) then
     failwith "Invalid or missing Object key"
 
@@ -58,7 +60,8 @@ and parse_object_body par =
 
     else
       let par = parser_next par in
-      if not (is_valid_object_value par.curr par) then
+      let par, is_valid = is_valid_object_value par.curr par in
+      if not is_valid then
         failwith "Not a valid object value"
 
     else
@@ -68,32 +71,25 @@ and parse_object_body par =
         parse_object_body par
 
       else
-        par (* Curr is value of key/value pair *)
+        par, true (* Curr is value of key/value pair *)
 
-and is_valid_object_value token par =
+
+(* token option -> parser -> parser * bool *)
+and is_valid_object_value (token: Token.t option) (par: t): t * bool =
   if Option.is_none token then
-    false
+    par, false
   else
     let token = Option.get token in
     match token.token_type with
-    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> true
-    | TokenType.OpenBrace -> (
-        print_string "Curr is: ";
-        Token.print_token (Option.get par.curr);
-        (* TODO: The parser is immutable so you have to return the parser here *)
-        try ignore (parse_object par); true
-        with Failure _ -> false
-    )
-    | TokenType.OpenBracket -> (
-        try ignore (parse_array par); true
-        with Failure _ -> false
-    )
-    | _ -> false
+    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> par, true
+    | TokenType.OpenBrace -> parse_object par
+    | TokenType.OpenBracket -> parse_array par
+    | _ -> par, false
 
-and parse_array par =
+and parse_array (par: t): t * bool =
   failwith "TODO: parse_array not implemented"
 
-let parse_input par =
+let parse_input (par: t): bool =
   try
     (* Parse first token *)
     match par.curr with
