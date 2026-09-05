@@ -137,6 +137,6 @@ let run () =
 
   test_parser_step4_valid ();
   test_parser_step4_valid2 ();
-  (* test_parser_step4_invalid (); *)
+  test_parser_step4_invalid ();
 
   print_endline "✓ SUCCESS: All Parser tests passed."
