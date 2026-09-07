@@ -23,18 +23,14 @@ let expect_type token expected_type =
   | Some token ->
      token.token_type = expected_type
 
-let is_valid_object_key (token: Token.t option): bool =
-  expect_type token TokenType.String
-
-let rec parse_object (par: t): t * bool =
+let rec parse_object (par: t): t =
   let par = parser_next par in
 
   if expect_type par.curr TokenType.CloseBrace then
-    par, true
+    par
 
   else
-    (* TODO: Check ok when stuff is not just a bunch of failwith *)
-    let par, _ok = parse_object_body par in
+    let par = parse_object_body par in
 
     let par = parser_next par in
     match par.curr with
@@ -43,12 +39,11 @@ let rec parse_object (par: t): t * bool =
       if curr_token.token_type <> TokenType.CloseBrace then
         failwith "Not a CloseBrace after object body"
       else
-        par, true
+        par
 
-(* TODO: Changes this failwiths for false *)
-and parse_object_body (par: t): t * bool =
-  if not (is_valid_object_key par.curr) then
-    failwith "Invalid or missing Object key"
+and parse_object_body (par: t): t =
+  if not (expect_type par.curr TokenType.String) then
+    failwith "Invalid token for object key"
 
   else
     let par = parser_next par in
@@ -57,54 +52,45 @@ and parse_object_body (par: t): t * bool =
 
     else
       let par = parser_next par in
-      let par, is_valid = is_valid_object_value par.curr par in
-      if not is_valid then
-        failwith "Not a valid object value"
+      let par = parse_object_value par in
 
-    else
       if expect_type par.peek TokenType.Comma then
         let par = parser_next par in (* Curr is comma *)
         let par = parser_next par in (* Curr is next key *)
-        parse_object_body par
+        parse_object_body par (* When peek = comma parse next key/value pair *)
 
       else
-        par, true (* Curr is value of key/value pair *)
+        par (* Curr is value of the key/value pair *)
 
 
-(* token option -> parser -> parser * bool *)
-and is_valid_object_value (token: Token.t option) (par: t): t * bool =
-  if Option.is_none token then
-    par, false
-  else
-    let token = Option.get token in
+and parse_object_value (par: t): t =
+  match par.curr with
+  | None -> failwith "Unexpected end of input: input ended where should be an object value"
+  | Some token ->
     match token.token_type with
-    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> par, true
+    | TokenType.String | TokenType.Bool | TokenType.Null | TokenType.Number -> par
     | TokenType.OpenBrace -> parse_object par
     | TokenType.OpenBracket -> parse_array par
-    | _ -> par, false
+    | _ -> failwith "Invalid token type for object value"
 
-and parse_array (par: t): t * bool =
+and parse_array (par: t): t =
   let par = parser_next par in
   if expect_type par.curr TokenType.CloseBracket then
-    par, true
+    par
 
   else
-    let par, is_valid = parse_array_body par in
-    if not is_valid then
-      failwith "Not a valid array body"
+    let par = parse_array_body par in
 
-    else
-      let par = parser_next par in
-      match par.curr with
-      | None -> failwith "Unexpected end of input: nothing after array body"
-      | Some curr_token ->
-          if curr_token.token_type <> TokenType.CloseBracket then
-            failwith "Not a CloseBracket after array body"
+    let par = parser_next par in
+    match par.curr with
+    | None -> failwith "Unexpected end of input: nothing after array body"
+    | Some curr_token ->
+      if curr_token.token_type <> TokenType.CloseBracket then
+        failwith "Not a CloseBracket after array body"
+      else
+        par
 
-          else
-            par, true
-
-and parse_array_body (par: t): t * bool =
+and parse_array_body (par: t): t =
   if not (is_valid_array_element par.curr) then (
     if Option.is_none par.curr then
       failwith "Unexpected end of input: Input ended in the middle of array body"
@@ -117,8 +103,8 @@ and parse_array_body (par: t): t * bool =
   else
     let curr_token_type = (Option.get par.curr).token_type in
     match curr_token_type with
-    | TokenType.OpenBrace -> failwith "Not implemented: parse_array_body OpenBrace"
-    | TokenType.OpenBracket -> failwith "Not implemented: parse_array_body OpenBracket"
+    | TokenType.OpenBrace -> failwith "TODO: Not implemented parse_array_body OpenBrace"
+    | TokenType.OpenBracket -> failwith "TODO: Not implemented parse_array_body OpenBracket"
     | TokenType.String
     | TokenType.Bool
     | TokenType.Null
@@ -127,7 +113,7 @@ and parse_array_body (par: t): t * bool =
       | None -> failwith "Unexpected end of input: close bracket not found after array body"
       | Some peek_token ->
         match peek_token.token_type with
-        | TokenType.CloseBracket -> par, true
+        | TokenType.CloseBracket -> par
         | TokenType.Comma -> (
           let par = parser_next par in (* curr is comma *)
           let par = parser_next par in (* curr is next_value *)
@@ -135,31 +121,36 @@ and parse_array_body (par: t): t * bool =
         )
         | _ -> failwith "Invalid token in the array body"
     )
-    | _ -> par, false
+    | _ -> par
 
 
 and is_valid_array_element token =
   match token with
   | None -> false
   | Some token ->
-      match token.token_type with
-      | TokenType.String
-      | TokenType.Bool
-      | TokenType.Null
-      | TokenType.Number
-      | TokenType.OpenBrace
-      | TokenType.OpenBracket -> true
-      | _ -> false
+    match token.token_type with
+    | TokenType.String
+    | TokenType.Bool
+    | TokenType.Null
+    | TokenType.Number
+    | TokenType.OpenBrace
+    | TokenType.OpenBracket -> true
+    | _ -> false
 
 let parse_input (par: t): bool =
   try
-    (* Parse first token *)
-    match par.curr with
-    | None -> (print_endline "Empty input"; false)
-    | Some v ->
-        match v.token_type with
-        | TokenType.OpenBrace -> ignore (parse_object par); true
-        | TokenType.OpenBracket -> ignore (parse_array par); true
-        | _ -> (print_endline "Unexpected first token for parsing"; false)
+    let first_token = par.curr in
+    ignore begin
+      match first_token with
+      | None -> failwith "Empty input"
+      | Some token ->
+        match token.token_type with
+        | TokenType.OpenBrace -> ignore (parse_object par)
+        | TokenType.OpenBracket -> ignore (parse_array par)
+        | _ -> failwith "Invalid token type for the first token"
+    end;
+    true
   with
-  | Failure msg -> (Printf.eprintf "Error parsing input: %s\n" msg; false)
+  | Failure msg ->
+    Printf.eprintf "Error parsing input: %s\n" msg;
+    false

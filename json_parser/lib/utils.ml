@@ -22,20 +22,23 @@ let split_string sep src =
   let rec loop i =
     if i = limit then
       None
+
     else
       let curr = String.get src i in
       if curr <> sep_first then
         loop (i + 1)
-    else
-      let start = i in
-      let count = sep_len in
-      let src_sub = String.sub src start count in
-      if src_sub <> sep then
-        loop (i + 1)
+
       else
-        let before = String.sub src 0 start in
-        let rest = String.sub src start (src_len - start) in
-        Some (before, rest)
+        let start = i in
+        let count = sep_len in
+        let src_sub = String.sub src start count in
+        if src_sub <> sep then
+          loop (i + 1)
+
+        else
+          let before = String.sub src 0 start in
+          let rest = String.sub src start (src_len - start) in
+          Some (before, rest)
   in
   loop 0
 
@@ -54,7 +57,7 @@ let get_input_from_file file_path =
   let full_path = prefix ^ "/" ^ file_path in
 
   if not (Sys.file_exists full_path) then (
-    prerr_endline "ERROR: File path will be prefixed with the `<project root>/`. Make sure to follow this pattern";
+    prerr_endline "ERROR: Not found. File path will be prefixed with the `<project root>/`. Make sure to follow this pattern";
     failwith "Input file not found"
   );
 

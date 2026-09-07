@@ -14,11 +14,6 @@ let incr_cursor lexer =
 let cursor_to n lexer =
   { cursor = n; input = lexer.input }
 
-let has_next lexer =
-  let input_len = String.length lexer.input in
-  let next_pos = lexer.cursor + 1 in
-  next_pos < input_len
-
 let get_ch lexer =
   let input_len = String.length lexer.input in
   if lexer.cursor < input_len then
@@ -32,14 +27,6 @@ let get_ch_at position lexer =
     Some (String.get lexer.input position)
   else
     None
-
-let print_lexer lexer =
-  let ch_str =
-    match get_ch lexer with
-    | None -> "EOF"
-    | Some v -> Char.escaped v
-  in
-  Printf.printf "Lexer => { cursor = %d; char_at = `%s` }\n" lexer.cursor ch_str
 
 let read_string lexer =
   let rec loop i lx =
@@ -65,14 +52,13 @@ let read_string lexer =
 (* TODO: Cover case where the Unknown object is length 1 *)
 let read_unknown lexer =
   let rec loop i lx =
-    let ch = get_ch_at i lx in
-    match ch with
+    match get_ch_at i lx with
     | None -> failwith "Lexer - read_string: Unexpected end of input"
-    | Some v ->
-        if Utils.is_closing_char v then
-          i
-        else
-          loop (i + 1) lx
+    | Some ch ->
+      if Utils.is_closing_char ch then
+        i
+      else
+        loop (i + 1) lx
   in
 
   let start_pos = lexer.cursor in
@@ -84,40 +70,39 @@ let read_unknown lexer =
   lexer, content
 
 let rec next_token lexer =
-  let init_ch = get_ch lexer in
-  match init_ch with
+  match get_ch lexer with
   | None -> lexer, None
   | Some ch ->
-     if Utils.is_whitespace ch then
-       next_token (incr_cursor lexer)
-     else
-       let lexer, token =
-         match ch with
-         | '\\' -> failwith "Lexer next_token - Error: Found and back slash."
-         | '{' -> lexer, Token.create TokenType.OpenBrace "{"
-         | '}' -> lexer, Token.create TokenType.CloseBrace "}"
-         | '[' -> lexer, Token.create TokenType.OpenBracket "["
-         | ']' -> lexer, Token.create TokenType.CloseBracket "]"
-         | ':' -> lexer, Token.create TokenType.Colon ":"
-         | ',' -> lexer, Token.create TokenType.Comma ","
-         | '"' ->
-            let lexer, value = read_string lexer in
-            let token = Token.create TokenType.String value in
-            lexer, token
-         | _ ->
-             let lexer, value = read_unknown lexer in
-             match value with
-             | "true" | "false" -> lexer, Token.create TokenType.Bool value
-             | "null" -> lexer, Token.create TokenType.Null value
-             | _ ->
-                 if Utils.is_number value then
-                   lexer, Token.create TokenType.Number value
-                 else
-                   lexer, Token.create TokenType.Unknown value
-       in
-       incr_cursor lexer, Some token
+    if Utils.is_whitespace ch then
+      next_token (incr_cursor lexer)
+    else
+      let lexer, token =
+        match ch with
+        | '\\' -> failwith "Lexer next_token - Error: Found and back slash."
+        | '{' -> lexer, Token.create TokenType.OpenBrace "{"
+        | '}' -> lexer, Token.create TokenType.CloseBrace "}"
+        | '[' -> lexer, Token.create TokenType.OpenBracket "["
+        | ']' -> lexer, Token.create TokenType.CloseBracket "]"
+        | ':' -> lexer, Token.create TokenType.Colon ":"
+        | ',' -> lexer, Token.create TokenType.Comma ","
+        | '"' ->
+          let lexer, value = read_string lexer in
+          let token = Token.create TokenType.String value in
+          lexer, token
+        | _ ->
+          let lexer, value = read_unknown lexer in
+          match value with
+          | "true" | "false" -> lexer, Token.create TokenType.Bool value
+          | "null" -> lexer, Token.create TokenType.Null value
+          | _ ->
+            if Utils.is_number value then
+              lexer, Token.create TokenType.Number value
+            else
+              lexer, Token.create TokenType.Unknown value
+      in
+      incr_cursor lexer, Some token
 
-let rec print_all_tokens lexer =
+let rec print_all_tokens (lexer: t): unit =
   let lexer, token = next_token lexer in
   match token with
   | None -> ()
@@ -125,3 +110,11 @@ let rec print_all_tokens lexer =
     Token.print_token token;
     print_all_tokens lexer
   )
+
+let print_lexer (lexer: t): unit =
+  let ch_str =
+    match get_ch lexer with
+    | None -> "EOF"
+    | Some v -> Char.escaped v
+  in
+  Printf.printf "Lexer => { cursor = %d; char_at = `%s` }\n" lexer.cursor ch_str
