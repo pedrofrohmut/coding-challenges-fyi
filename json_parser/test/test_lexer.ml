@@ -317,6 +317,21 @@ let test_lexer_step4_invalid () =
     exit 1
   )
 
+let test_lexer_step5_valid () =
+  let input = get_input_from_file "test/json_inputs/step5/pass1.json" in
+  let lexer = Lexer.create input in
+
+  let expected_tokens = Tokens_step5.pass1_tokens in
+
+  let result = check_tokens expected_tokens lexer in
+
+  if result then () else (
+    (* Lexer.print_all_tokens lexer; *)
+    print_endline "✗ FAIL: Lexer Failed step 5 valid 1";
+    exit 1
+  )
+
+
 let run () =
   test_lexer_step1_valid ();
   test_lexer_step1_invalid ();
@@ -334,5 +349,7 @@ let run () =
   test_lexer_step4_valid ();
   test_lexer_step4_valid2 ();
   test_lexer_step4_invalid ();
+
+  test_lexer_step5_valid ();
 
   print_endline "✓ SUCCESS: All lexer tests passed."

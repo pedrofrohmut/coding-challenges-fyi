@@ -78,7 +78,6 @@ let rec next_token lexer =
     else
       let lexer, token =
         match ch with
-        | '\\' -> failwith "Lexer next_token - Error: Found and back slash."
         | '{' -> lexer, Token.create TokenType.OpenBrace "{"
         | '}' -> lexer, Token.create TokenType.CloseBrace "}"
         | '[' -> lexer, Token.create TokenType.OpenBracket "["
@@ -89,6 +88,7 @@ let rec next_token lexer =
           let lexer, value = read_string lexer in
           let token = Token.create TokenType.String value in
           lexer, token
+        | '\\' -> failwith "TODO: implement the backslash tokens"
         | _ ->
           let lexer, value = read_unknown lexer in
           match value with
