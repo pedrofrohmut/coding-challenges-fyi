@@ -37,3 +37,33 @@ let get_input_from_file file_path =
   close_in in_chan;
 
   file_str
+
+let check_tokens expected_tokens lexer =
+  let rec get_tokens lx =
+    let lx, token = Lexer.next_token lx in
+    match token with
+    | None -> []
+    | Some token -> token.token_type :: get_tokens lx
+  in
+
+  let rec match_tokens xs ys =
+    (* xs lexer tokens and ys expected tokens *)
+    match xs, ys with
+    | [], [] -> true
+    | [], _ | _, [] -> (
+      prerr_endline "The number of tokens doesn't match";
+      false
+    )
+    | x :: xt, y :: yt ->
+       if x <> y then (
+         let y = Token_type.to_string y in
+         let x = Token_type.to_string x in
+         Printf.printf "Token_types doesn't match. Expected `%s` but got `%s` instead.\n" y x;
+         false
+       )
+       else
+         match_tokens xt yt
+  in
+
+  let tokens = get_tokens lexer in
+  match_tokens tokens expected_tokens
