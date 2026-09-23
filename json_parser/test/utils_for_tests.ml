@@ -38,7 +38,7 @@ let get_input_from_file file_path =
 
   file_str
 
-let check_tokens expected_tokens lexer =
+let check_tokens expected_tokens lex =
   let rec get_tokens lx =
     let lx, token = Lexer.next_token lx in
     match token with
@@ -65,5 +65,8 @@ let check_tokens expected_tokens lexer =
          match_tokens xt yt
   in
 
-  let tokens = get_tokens lexer in
+  let tokens = get_tokens lex in
   match_tokens tokens expected_tokens
+
+let check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.Output.t, string) result): bool =
+  failwith "TODO: Not implemented - check_parser"
