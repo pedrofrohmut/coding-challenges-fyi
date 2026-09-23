@@ -1,6 +1,8 @@
 type t = private {
   cursor: int;
   input: string;
+  line: int;
+  column: int;
 }
 
 val create: string -> t

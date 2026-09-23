@@ -6,9 +6,9 @@ let test_lexer_step1_valid (): bool =
   let lexer = Lexer.create input in
 
   let expected_tokens = [
-      Token_type.OpenBrace;
-      Token_type.CloseBrace;
-    ] in
+    Token_type.OpenBrace;
+    Token_type.CloseBrace;
+  ] in
 
   let result = check_tokens expected_tokens lexer in
 

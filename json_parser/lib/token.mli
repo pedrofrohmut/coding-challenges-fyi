@@ -4,3 +4,5 @@ type t = private {
   token_type: Token_type.t;
   literal: string;
 }
+
+val create: Token_type.t -> string -> t
