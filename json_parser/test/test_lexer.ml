@@ -38,4 +38,10 @@ let run (): bool =
 
   let failed_tests = List.filter (fun test -> not (test ())) lexer_tests in
 
-  (List.length failed_tests) = 0
+  if (List.length failed_tests) > 0 then (
+    Printf.printf "Lexer failed in %d tests\n" (List.length failed_tests);
+    false
+  )
+
+  else
+    true

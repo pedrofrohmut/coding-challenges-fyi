@@ -69,4 +69,4 @@ let check_tokens expected_tokens lex =
   match_tokens tokens expected_tokens
 
 let check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.Output.t, string) result): bool =
-  failwith "TODO: Not implemented - check_parser"
+  expected = parsed
