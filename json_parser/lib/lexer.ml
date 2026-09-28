@@ -39,6 +39,14 @@ let cursor_to (lex: t) (i: int): t =
   else
     { lex with cursor = i } (* TODO: Add the tracked values here *)
 
+let is_whitespace_char = function
+  | ' ' | '\r' | '\t' | '\n' -> true
+  | _ -> false
+
+let is_closing_char = function
+  | ':' | ',' | ']' | '}' | '\n' -> true
+  | _ -> false
+
 let get_string_content (lex: t): t * string =
   let rec loop i lex =
     let curr = get_ch_at i lex in
@@ -65,16 +73,38 @@ let get_string_content (lex: t): t * string =
     let lex = cursor_to lex str_end in
     lex, content
 
-let is_whitespace = function
-  | ' ' | '\r' | '\t' | '\n' -> true
-  | _ -> false
+let get_unknown_content (lex: t): t * string =
+  let rec loop i lex =
+    match get_ch_at i lex with
+    | None -> failwith "Invalid Unknown Content. Reached end of input while reading unknown content."
+    | Some ch ->
+       if is_closing_char ch then
+         i
+       else
+         loop (i + 1) lex
+  in
+
+  match get_ch lex with
+  | None -> failwith "Invalid Unknown Content. get_unknown_content called after end of input."
+  | Some ch ->
+     let peek = peek_ch lex in
+     if Option.is_none peek || is_closing_char (Option.get peek) then
+       lex, Char.escaped ch
+
+     else
+       let str_begin = lex.cursor in
+       let str_end = loop str_begin lex in
+       let content_length = str_end - str_begin in
+       let content = String.sub lex.input str_begin content_length in
+       let lex = cursor_to lex (str_end - 1) in
+       lex, content
 
 (* TODO: change line and column. Wait to do it when checking for whitespaces *)
 let rec next_token (lex: t): t * Token.t option =
   match get_ch lex with
   | None -> lex, None
   | Some ch ->
-     if is_whitespace ch then
+     if is_whitespace_char ch then
        next_token (incr_cursor lex)
 
      else
@@ -83,10 +113,13 @@ let rec next_token (lex: t): t * Token.t option =
          | '{' -> lex, Token.create Token_type.OpenBrace "{"
          | '}' -> lex, Token.create Token_type.CloseBrace "}"
          | ':' -> lex, Token.create Token_type.Colon ":"
+         | ',' -> lex, Token.create Token_type.Comma ","
          | '"' ->
-            let lex, string_content = get_string_content lex in
-            lex, Token.create Token_type.String string_content
-         | _ -> lex, Token.create Token_type.Unknown (Char.escaped ch)
+            let lex, content = get_string_content lex in
+            lex, Token.create Token_type.String content
+         | _ ->
+            let lex, content = get_unknown_content lex in
+            lex, Token.create Token_type.Unknown content
        in
        let lex = incr_cursor lex in
        lex, Some token
