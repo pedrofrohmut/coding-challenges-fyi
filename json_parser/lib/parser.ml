@@ -60,4 +60,4 @@ let run (par: t): (Output.t, string) result =
   | Some token ->
      match token.token_type with
      | Token_type.OpenBrace -> let _, result = parse_object par in result
-     | _ -> failwith "Invalid or not covered token found at parser run, matching the first token"
+     | _ -> Error "Invalid or not covered token found at parser run, matching the first token"
