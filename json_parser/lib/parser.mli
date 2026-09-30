@@ -1,10 +1,12 @@
 module Output : sig
+  type key = Key of string
+
   type t =
     | Null
     | Bool of bool
     | Number of float
     | String of string
-    | Object of (string * t) list
+    | Object of (key * t) list
     | Array of t list
 end
 
