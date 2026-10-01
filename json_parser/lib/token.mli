@@ -3,6 +3,8 @@
 type t = private {
   token_type: Token_type.t;
   literal: string;
+  line: int;
+  column: int;
 }
 
-val create: Token_type.t -> string -> t
+val create: Token_type.t -> string -> int -> int -> t

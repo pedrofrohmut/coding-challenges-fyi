@@ -7,3 +7,4 @@ type t = private {
 
 val create: string -> t
 val next_token: t -> t * Token.t option
+val print_all_tokens: string -> unit

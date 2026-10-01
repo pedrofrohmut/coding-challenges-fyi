@@ -8,7 +8,7 @@ type t = {
 }
 
 let create (input: string): t =
-  { cursor = 0; input; line = 1; column = 0 }
+  { cursor = 0; input; line = 1; column = 1 }
 
 let get_ch (lex: t): char option =
   if lex.cursor < (String.length lex.input) then
@@ -29,15 +29,33 @@ let peek_ch (lex: t): char option =
     None
 
 let incr_cursor (lex: t): t =
-  (* TODO: if curr ch is \n add line and reset column instead *)
-  { lex with cursor = lex.cursor + 1; column = lex.column + 1 }
+  match get_ch lex with
+  | None -> failwith "Cannot increment the lexer cursor. End of input"
+  | Some ch ->
+     if ch = '\n' then
+       { lex with cursor = lex.cursor + 1; column = 1; line = lex.line + 1 }
+     else
+       { lex with cursor = lex.cursor + 1; column = lex.column + 1 }
 
-(* TODO: track the line and col from lex.cursor to i *)
-let cursor_to (lex: t) (i: int): t =
-  if i > (String.length lex.input) then
-    failwith "Out of bounds. Try to point the lexer cursor into an invalid position"
-  else
-    { lex with cursor = i } (* TODO: Add the tracked values here *)
+let cursor_to_foo (lex: t) (i: int): t =
+  { lex with cursor = i }
+
+(* Instead of just setting the cursor to i, it iterates on the input to track the line and column *)
+let cursor_to (lex: t) (to_pos: int): t =
+  let rec loop i line col =
+    if i >= to_pos then
+      line, col
+    else
+      match get_ch_at i lex with
+      | None -> failwith "Out of bounds. Trying to point the lexer cursor into an invalid position"
+      | Some ch ->
+         if ch = '\n' then
+           loop (i + 1) (line + 1) 1
+         else
+           loop (i + 1) line (col + 1)
+  in
+  let line, column = loop lex.cursor lex.line lex.column in
+  { lex with cursor = to_pos; line; column }
 
 let is_whitespace_char = function
   | ' ' | '\r' | '\t' | '\n' -> true
@@ -99,27 +117,44 @@ let get_unknown_content (lex: t): t * string =
        let lex = cursor_to lex (str_end - 1) in
        lex, content
 
-(* TODO: change line and column. Wait to do it when checking for whitespaces *)
 let rec next_token (lex: t): t * Token.t option =
   match get_ch lex with
   | None -> lex, None
   | Some ch ->
      if is_whitespace_char ch then
-       next_token (incr_cursor lex)
+       let lex = incr_cursor lex in
+       next_token lex
 
      else
        let lex, token =
          match ch with
-         | '{' -> lex, Token.create Token_type.OpenBrace "{"
-         | '}' -> lex, Token.create Token_type.CloseBrace "}"
-         | ':' -> lex, Token.create Token_type.Colon ":"
-         | ',' -> lex, Token.create Token_type.Comma ","
+         | '{' -> lex, Token.create Token_type.OpenBrace "{" lex.line lex.column
+         | '}' -> lex, Token.create Token_type.CloseBrace "}" lex.line lex.column
+         | ':' -> lex, Token.create Token_type.Colon ":" lex.line lex.column
+         | ',' -> lex, Token.create Token_type.Comma "," lex.line lex.column
          | '"' ->
+            let start_line = lex.line in
+            let start_column = lex.column in
             let lex, content = get_string_content lex in
-            lex, Token.create Token_type.String content
+            lex, Token.create Token_type.String content start_line start_column
          | _ ->
+            let start_line = lex.line in
+            let start_column = lex.column in
             let lex, content = get_unknown_content lex in
-            lex, Token.create Token_type.Unknown content
+            lex, Token.create Token_type.Unknown content start_line start_column
        in
        let lex = incr_cursor lex in
        lex, Some token
+
+let print_all_tokens (input: string): unit =
+  let rec loop lex =
+    match next_token lex with
+    | _, None -> ()
+    | lex, Some token -> (
+      printf "Token { token_type: `%s`; literal: `%s`; line: %d; column: %d }\n"
+        (Token_type.to_string token.token_type) token.literal token.line token.column;
+      loop lex
+    )
+  in
+  let lex = create input in
+  loop lex
