@@ -85,7 +85,7 @@ let test_lexer_step2_valid3 (): bool =
   if not result then
     print_endline "✗ FAIL: Lexer Failed at step 2 valid 3";
 
-  Lexer.print_all_tokens input;
+  (* Lexer.print_all_tokens input; *)
   result
 
 let test_lexer_step2_invalid1 (): bool =

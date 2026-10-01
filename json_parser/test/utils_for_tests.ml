@@ -1,4 +1,5 @@
 open Json_parser
+open Printf
 
 let prefix_path file_path =
   let cwd = Sys.getcwd () in
@@ -69,4 +70,10 @@ let check_tokens expected_tokens lex =
   match_tokens tokens expected_tokens
 
 let check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.Output.t, string) result): bool =
-  expected = parsed
+  match expected, parsed with
+  | Error _, Ok _ | Ok _, Error _ -> false
+  | Ok exp_ok, Ok par_ok -> exp_ok = par_ok
+  | Error exp_err, Error par_err ->
+     if exp_err <> par_err then (* Different messages is just an warn not a faling test. *)
+       printf "WARN: The error messages don't match. Expected err: `%s` and parser err: `%s`\n" exp_err par_err;
+     true

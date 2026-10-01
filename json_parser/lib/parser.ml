@@ -106,5 +106,11 @@ let run (par: t): (Output.t, string) result =
   | None -> Error "Empty json"
   | Some token ->
      match token.token_type with
-     | Token_type.OpenBrace -> let _, result = parse_object par in result
+     | Token_type.OpenBrace -> (
+        try
+          let _, result = parse_object par in
+          result
+        with
+          Failure msg -> Error msg
+     )
      | _ -> Error "Invalid or not covered token found at parser run, matching the first token"
