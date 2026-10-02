@@ -1,6 +1,6 @@
 open Json_parser
 
-let test_lexer_step1_valid (): bool =
+let test_lexer_step1_valid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step1/valid.json" in
   let lex = Lexer.create input in
 
@@ -16,7 +16,7 @@ let test_lexer_step1_valid (): bool =
 
   result
 
-let test_lexer_step1_invalid (): bool =
+let test_lexer_step1_invalid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step1/invalid.json" in
   let lex = Lexer.create input in
 
@@ -123,15 +123,83 @@ let test_lexer_step2_invalid2 (): bool =
 
   result
 
+let test_lexer_step3_valid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/valid.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Null; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Number;
+    Token_type.CloseBrace;
+  ] in
+
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    print_endline "✗ FAIL: Lexer Failed at step 3 valid 1";
+
+  result
+
+let test_lexer_step3_invalid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/invalid.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Unknown; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Null; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Number;
+    Token_type.CloseBrace;
+  ] in
+
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    print_endline "✗ FAIL: Lexer Failed at step 3 invalid 1";
+
+  result
+
+let test_lexer_step3_invalid2 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/invalid2.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Unknown; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Null; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
+    Token_type.String; Token_type.Colon; Token_type.Number;
+    Token_type.CloseBrace;
+  ] in
+
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    print_endline "✗ FAIL: Lexer Failed at step 3 invalid 2";
+
+  result
+
 let run (): bool =
   let lexer_tests = [
-      test_lexer_step1_valid;
-      test_lexer_step1_invalid;
-      test_lexer_step2_valid1;
-      test_lexer_step2_valid2;
-      test_lexer_step2_valid3;
-      test_lexer_step2_invalid1;
-      test_lexer_step2_invalid2;
+    test_lexer_step1_valid1;
+    test_lexer_step1_invalid1;
+
+    test_lexer_step2_valid1;
+    test_lexer_step2_valid2;
+    test_lexer_step2_valid3;
+    test_lexer_step2_invalid1;
+    test_lexer_step2_invalid2;
+
+    test_lexer_step3_valid1;
+    test_lexer_step3_invalid1;
+    test_lexer_step3_invalid2;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test ())) lexer_tests in

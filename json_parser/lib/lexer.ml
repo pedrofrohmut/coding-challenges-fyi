@@ -65,6 +65,15 @@ let is_closing_char = function
   | ':' | ',' | ']' | '}' | '\n' -> true
   | _ -> false
 
+(* You need the second match because float wont work in int convertions and hexe octa and binary wont in float convertions *)
+let is_number_string (src: string): bool =
+  match int_of_string_opt src with
+  | Some _ -> true
+  | None ->
+     match float_of_string_opt src with
+     | Some _ -> true
+     | None -> false
+
 let get_string_content (lex: t): t * string =
   let rec loop i lex =
     let curr = get_ch_at i lex in
@@ -141,7 +150,17 @@ let rec next_token (lex: t): t * Token.t option =
             let start_line = lex.line in
             let start_column = lex.column in
             let lex, content = get_unknown_content lex in
-            lex, Token.create Token_type.Unknown content start_line start_column
+            let token_type =
+              match content with
+              | "true" | "false" -> Token_type.Bool
+              | "null" -> Token_type.Null
+              | _ ->
+                 if is_number_string content then
+                   Token_type.Number
+                 else
+                   Token_type.Unknown
+            in
+            lex, Token.create token_type content start_line start_column
        in
        let lex = incr_cursor lex in
        lex, Some token
