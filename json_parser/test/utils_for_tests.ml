@@ -77,3 +77,24 @@ let check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.O
      if exp_err <> par_err then (* Different messages is just an warn not a faling test. *)
        printf "WARN: The error messages don't match. Expected err: `%s` and parser err: `%s`\n" exp_err par_err;
      true
+
+let rec string_of_output = function
+  | Parser.Output.Null -> "null"
+  | Parser.Output.Bool b -> string_of_bool b
+  | Parser.Output.Number n -> string_of_float n
+  | Parser.Output.String s -> Printf.sprintf "%S" s
+  | Parser.Output.Array xs ->
+      "[ " ^ String.concat "," (List.map string_of_output xs) ^ " ]"
+  | Parser.Output.Object kvs ->
+      let pair (Parser.Output.Key k, v) =
+        Printf.sprintf "%S: %s" k (string_of_output v)
+      in
+      "{ " ^ String.concat ", " (List.map pair kvs) ^ " }"
+
+let print_parsed = function
+  | Error msg -> printf "Parsed is 'Error `%s`'\n" msg
+  | Ok output -> printf "Parsed is 'Ok `%s`'\n" (string_of_output output)
+
+let test_parser_failwith (parsed: (Parser.Output.t, string) result) (msg: string): unit =
+  print_endline msg;
+  print_parsed parsed

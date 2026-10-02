@@ -38,6 +38,22 @@ let to_tokentype_string (token: Token.t option): string =
   | None -> "None"
   | Some token -> Token_type.to_string token.token_type
 
+let parse_value (par: t): t * Output.t =
+  match par.curr with
+  | None -> failwith "End of input reached while trying to parse a value"
+  | Some token ->
+     match token.token_type with
+     | Token_type.String -> par, Output.String token.literal
+     | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
+     | Token_type.Null -> par, Output.Null
+     | Token_type.Number ->
+        let num = float_of_string_opt token.literal in
+        if Option.is_none num then
+          failwith "Invalid number found in the token literal trying to parse a value"
+        else
+          par, Output.Number (Option.get num)
+     | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s`." (to_tokentype_string par.curr))
+
 let parse_object_body (par: t): t * (Output.key * Output.t) list =
   let rec loop acc par =
     if not (is_token_of par.curr Token_type.String) then
@@ -51,25 +67,21 @@ let parse_object_body (par: t): t * (Output.key * Output.t) list =
 
       else
         let par = next_token par in
-        if not (is_token_of par.curr Token_type.String) then
-          failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s`." (to_tokentype_string par.curr))
+        let par, value = parse_value par in
+        let acc = (key, value) :: acc in
+
+        if is_token_of par.peek Token_type.CloseBrace then
+          (* Case: found object close character *)
+          par, List.rev acc
 
         else
-          let value = Output.String (Option.get par.curr).literal in
-          let acc = (key, value) :: acc in
-
-          if is_token_of par.peek Token_type.CloseBrace then
-            (* Case: found object close character *)
-            par, List.rev acc
+          let par = next_token par in
+          if not (is_token_of par.curr Token_type.Comma) then
+            failwith (sprintf "Expected Comma after the value of key/value pair of an object when this object is not closed yet. Got a token of `%s`" (to_tokentype_string par.curr))
 
           else
-            let par = next_token par in
-            if not (is_token_of par.curr Token_type.Comma) then
-              failwith (sprintf "Expected Comma after the value of key/value pair of an object when this object is not closed yet. Got a token of `%s`" (to_tokentype_string par.curr))
-
-            else
-              let par = next_token par in (* curr should be next key *)
-              loop acc par
+            let par = next_token par in (* curr should be next key *)
+            loop acc par
   in
   loop [] par
 

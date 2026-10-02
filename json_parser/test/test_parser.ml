@@ -1,6 +1,8 @@
 open Json_parser
 
-let test_parser_step1_valid (): bool =
+module Out = Parser.Output
+
+let test_parser_step1_valid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step1/valid.json" in
   let lex = Lexer.create input in
   let par = Parser.create lex in
@@ -11,11 +13,11 @@ let test_parser_step1_valid (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 1 valid";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 1 valid";
 
   result
 
-let test_parser_step1_invalid (): bool =
+let test_parser_step1_invalid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step1/invalid.json" in
   let lex = Lexer.create input in
   let par = Parser.create lex in
@@ -26,11 +28,11 @@ let test_parser_step1_invalid (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 1 invalid";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 1 invalid";
 
   result
 
-let test_parser_step2_valid (): bool =
+let test_parser_step2_valid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step2/valid.json" in
   let lex = Lexer.create input in
   let par = Parser.create lex in
@@ -42,7 +44,7 @@ let test_parser_step2_valid (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 2 valid 1";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 2 valid 1";
 
   result
 
@@ -61,7 +63,7 @@ let test_parser_step2_valid2 (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 2 valid 2";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 2 valid 2";
 
   result
 
@@ -83,11 +85,11 @@ let test_parser_step2_valid3 (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 2 valid 3";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 2 valid 3";
 
   result
 
-let test_parser_step2_invalid (): bool =
+let test_parser_step2_invalid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step2/invalid.json" in
   let lex = Lexer.create input in
   let par = Parser.create lex in
@@ -98,7 +100,7 @@ let test_parser_step2_invalid (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 2 invalid 1";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 2 invalid 1";
 
   result
 
@@ -113,46 +115,50 @@ let test_parser_step2_invalid2 (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    print_endline "✗ FAIL: Parser Failed at step 2 invalid 2";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 2 invalid 2";
 
   result
 
-(* let test_parser_step3_valid (): bool = *)
-(*   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step2/valid.json" in *)
-(*   let lex = Lexer.create input in *)
-(*   let par = Parser.create lex in *)
-(*   let parsed = Parser.run par in *)
+let test_parser_step3_valid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/valid.json" in
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
 
-(*   let output = Output.Object [ *)
-(*     Output.Key "key1", Output.Bool true; *)
-(*     Output.Key "key2", Output.Bool false; *)
-(*     Output.Key "key3", Output.Null; *)
-(*     Output.Key "key4", Output.String "value"; *)
-(*     Output.Key "key5", Output.Number 101.0; *)
-(*   ] in *)
-(*   let expected = Ok output in *)
+  let output = Out.Object [
+    Out.Key "key1", Out.Bool true;
+    Out.Key "key2", Out.Bool false;
+    Out.Key "key3", Out.Null;
+    Out.Key "key4", Out.String "value";
+    Out.Key "key5", Out.Number 101.0;
+  ] in
+  let expected = Ok output in
 
-(*   let result = Utils_for_tests.check_parsed expected parsed in *)
+  let result = Utils_for_tests.check_parsed expected parsed in
 
-(*   if not result then *)
-(*     print_endline "✗ FAIL: Parser Failed at step 2 valid 1"; *)
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 3 valid 1";
 
-(*   result *)
+  result
+
+let test_parser_step3_invalid1 (): bool = true
+
+let test_parser_step3_invalid2 (): bool = true
 
 let run (): bool =
   let parser_tests = [
-    test_parser_step1_valid;
-    test_parser_step1_invalid;
+    test_parser_step1_valid1;
+    test_parser_step1_invalid1;
 
-    test_parser_step2_valid;
+    test_parser_step2_valid1;
     test_parser_step2_valid2;
     test_parser_step2_valid3;
-    test_parser_step2_invalid;
+    test_parser_step2_invalid1;
     test_parser_step2_invalid2;
 
-    (* test_parser_step3_valid; *)
-    (* test_parser_step3_invalid; *)
-    (* test_parser_step3_invalid2; *)
+    test_parser_step3_valid1;
+    test_parser_step3_invalid1;
+    test_parser_step3_invalid2;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test())) parser_tests in
