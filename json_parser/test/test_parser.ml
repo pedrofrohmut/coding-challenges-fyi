@@ -141,9 +141,35 @@ let test_parser_step3_valid1 (): bool =
 
   result
 
-let test_parser_step3_invalid1 (): bool = true
+let test_parser_step3_invalid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/invalid.json" in
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
 
-let test_parser_step3_invalid2 (): bool = true
+  let expected = Error "Unsupported or invalid token type for object value. Got a token of `Unknown` with value `False` while trying to parse a value." in
+
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 3 invalid 1";
+
+  result
+
+let test_parser_step3_invalid2 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step3/invalid2.json" in
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let expected = Error "Unsupported or invalid token type for object value. Got a token of `Unknown` with value `T` while trying to parse a value." in
+
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 3 invalid 2";
+
+  result
 
 let run (): bool =
   let parser_tests = [

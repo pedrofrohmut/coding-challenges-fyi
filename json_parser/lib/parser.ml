@@ -52,7 +52,7 @@ let parse_value (par: t): t * Output.t =
           failwith "Invalid number found in the token literal trying to parse a value"
         else
           par, Output.Number (Option.get num)
-     | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s`." (to_tokentype_string par.curr))
+     | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s` with value `%s` while trying to parse a value." (to_tokentype_string par.curr) token.literal)
 
 let parse_object_body (par: t): t * (Output.key * Output.t) list =
   let rec loop acc par =
