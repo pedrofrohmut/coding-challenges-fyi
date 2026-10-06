@@ -38,23 +38,34 @@ let to_tokentype_string (token: Token.t option): string =
   | None -> "None"
   | Some token -> Token_type.to_string token.token_type
 
-let parse_value (par: t): t * Output.t =
-  match par.curr with
-  | None -> failwith "End of input reached while trying to parse a value"
-  | Some token ->
-     match token.token_type with
-     | Token_type.String -> par, Output.String token.literal
-     | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
-     | Token_type.Null -> par, Output.Null
-     | Token_type.Number ->
-        let num = float_of_string_opt token.literal in
-        if Option.is_none num then
-          failwith "Invalid number found in the token literal trying to parse a value"
-        else
-          par, Output.Number (Option.get num)
-     | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s` with value `%s` while trying to parse a value." (to_tokentype_string par.curr) token.literal)
 
-let parse_object_body (par: t): t * (Output.key * Output.t) list =
+let rec parse_object (par: t): t * Output.t =
+  let output = Output.Object [] in
+
+  if not (is_token_of par.curr Token_type.OpenBrace) then
+    failwith (sprintf "Invalid first token for parse_object. Expected %s, but got %s instead."
+                (Token_type.to_string Token_type.OpenBrace)
+                (to_tokentype_string par.curr))
+
+  else
+    let par = next_token par in
+    if is_token_of par.curr Token_type.CloseBrace then
+      (* Case: empty object *)
+      par, output
+
+    else
+      let par, body = parse_object_body par in
+      let output = Output.Object body in
+      let par = next_token par in
+      if not (is_token_of par.curr Token_type.CloseBrace) then
+        failwith (sprintf "Invalid last token for parse_object. Expected %s, but got %s instead."
+                    (Token_type.to_string Token_type.CloseBrace)
+                    (to_tokentype_string par.curr))
+
+      else
+        par, output
+
+and parse_object_body (par: t): t * (Output.key * Output.t) list =
   let rec loop acc par =
     if not (is_token_of par.curr Token_type.String) then
       failwith (sprintf "Expected String token for the object key but got `%s` instead." (to_tokentype_string par.curr))
@@ -71,7 +82,7 @@ let parse_object_body (par: t): t * (Output.key * Output.t) list =
         let acc = (key, value) :: acc in
 
         if is_token_of par.peek Token_type.CloseBrace then
-          (* Case: found object close character *)
+          (* Case: found the object closing character *)
           par, List.rev acc
 
         else
@@ -85,33 +96,37 @@ let parse_object_body (par: t): t * (Output.key * Output.t) list =
   in
   loop [] par
 
-let parse_object (par: t): t * ((Output.t, string) result) =
-  let output = Output.Object [] in
+and parse_value (par: t): t * Output.t =
+  match par.curr with
+  | None -> failwith "End of input reached while trying to parse a value"
+  | Some token ->
+     match token.token_type with
+     | Token_type.OpenBrace -> parse_object par
+     | Token_type.OpenBracket -> parse_array par
+     | Token_type.String -> par, Output.String token.literal
+     | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
+     | Token_type.Null -> par, Output.Null
+     | Token_type.Number ->
+        let num = float_of_string_opt token.literal in
+        if Option.is_none num then
+          failwith "Invalid number found in the token literal trying to parse a value"
+        else
+          par, Output.Number (Option.get num)
+     | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s` with value `%s` while trying to parse a value." (to_tokentype_string par.curr) token.literal)
 
-  if not (is_token_of par.curr Token_type.OpenBrace) then
-    let err = Printf.sprintf "Invalid first token for parse_object. Expected %s, but got %s instead."
-                (Token_type.to_string Token_type.OpenBrace)
-                (to_tokentype_string par.curr) in
-    par, Error err
-
-  else
-    let par = next_token par in
-    if is_token_of par.curr Token_type.CloseBrace then
-      (* Case: empty object *)
-      par, Ok output
-
+and parse_array (par: t): t * Output.t =
+  let rec loop acc par =
+    if is_token_of par.curr Token_type.CloseBracket then
+      par, List.rev acc
     else
-      let par, body = parse_object_body par in
-      let output = Output.Object body in
+      let par, value = parse_value par in
       let par = next_token par in
-      if not (is_token_of par.curr Token_type.CloseBrace) then
-        let err = Printf.sprintf "Invalid last token for parse_object. Expected %s, but got %s instead."
-                    (Token_type.to_string Token_type.CloseBrace)
-                    (to_tokentype_string par.curr) in
-        par, Error err
-
-      else
-        par, Ok output
+      let acc = value :: acc in
+      loop acc par
+  in
+  let par = next_token par in (* jump to the first value of the array or the close bracket *)
+  let par, arr_body = loop [] par in
+  par, Output.Array arr_body
 
 let run (par: t): (Output.t, string) result =
   match par.curr with
@@ -120,8 +135,8 @@ let run (par: t): (Output.t, string) result =
      match token.token_type with
      | Token_type.OpenBrace -> (
         try
-          let _, result = parse_object par in
-          result
+          let _, output = parse_object par in
+          Ok output
         with
           Failure msg -> Error msg
      )

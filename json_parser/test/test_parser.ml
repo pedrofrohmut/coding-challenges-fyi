@@ -171,6 +171,39 @@ let test_parser_step3_invalid2 (): bool =
 
   result
 
+let test_parser_step4_valid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step4/valid.json" in
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let output = Out.Object [
+    Out.Key "key", Out.String "value";
+    Out.Key "key-n", Out.Number 101.0;
+    Out.Key "key-o", Out.Object [];
+    Out.Key "key-l", Out.Array [];
+  ] in
+  let expected = Ok output in
+
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 3 valid 1";
+
+  result
+
+let test_parser_step4_valid2 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step4/valid2.json" in
+  (* TODO: not implemented step4 valid2 *)
+  ignore input;
+  true
+
+let test_parser_step4_invalid1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step4/invalid.json" in
+  (* TODO: not implemented step4 invalid1 *)
+  ignore input;
+  true
+
 let run (): bool =
   let parser_tests = [
     test_parser_step1_valid1;
@@ -185,6 +218,10 @@ let run (): bool =
     test_parser_step3_valid1;
     test_parser_step3_invalid1;
     test_parser_step3_invalid2;
+
+    test_parser_step4_valid1;
+    test_parser_step4_valid2;
+    test_parser_step4_invalid1;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test())) parser_tests in
