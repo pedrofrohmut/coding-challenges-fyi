@@ -98,3 +98,7 @@ let print_parsed = function
 let test_parser_failwith (parsed: (Parser.Output.t, string) result) (msg: string): unit =
   print_endline msg;
   print_parsed parsed
+
+let test_lexer_failwith (input: string) (msg: string): unit =
+  Lexer.print_all_tokens input;
+  print_endline msg

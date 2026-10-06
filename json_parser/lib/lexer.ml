@@ -139,6 +139,8 @@ let rec next_token (lex: t): t * Token.t option =
          match ch with
          | '{' -> lex, Token.create Token_type.OpenBrace "{" lex.line lex.column
          | '}' -> lex, Token.create Token_type.CloseBrace "}" lex.line lex.column
+         | '[' -> lex, Token.create Token_type.OpenBracket "[" lex.line lex.column
+         | ']' -> lex, Token.create Token_type.CloseBracket "]" lex.line lex.column
          | ':' -> lex, Token.create Token_type.Colon ":" lex.line lex.column
          | ',' -> lex, Token.create Token_type.Comma "," lex.line lex.column
          | '"' ->
