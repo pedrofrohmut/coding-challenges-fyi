@@ -133,3 +133,16 @@ let pass2_tokens = [
   Token_type.CloseBracket;  (* 18 *)
   Token_type.CloseBracket;  (* 19 *)
 ]
+
+let pass3_tokens = [
+  Token_type.OpenBrace;                                                     (* { *)
+
+  Token_type.String; Token_type.Colon;                                      (* "JSON Test Pattern pass3": *)
+  Token_type.OpenBrace;                                                     (* { *)
+
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "The outermost value": "must be an object or array.", *)
+  Token_type.String; Token_type.Colon; Token_type.String;                   (* "In this test": "It is an object." *)
+
+  Token_type.CloseBrace;                                                    (* } — closes inner object *)
+  Token_type.CloseBrace;                                                    (* } — closes outer object *)
+]
