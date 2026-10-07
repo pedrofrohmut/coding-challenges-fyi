@@ -188,21 +188,45 @@ let test_parser_step4_valid1 (): bool =
   let result = Utils_for_tests.check_parsed expected parsed in
 
   if not result then
-    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 3 valid 1";
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 4 valid 1";
 
   result
 
 let test_parser_step4_valid2 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step4/valid2.json" in
-  (* TODO: not implemented step4 valid2 *)
-  ignore input;
-  true
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let output = Out.Object [
+    Out.Key "key", Out.String "value";
+    Out.Key "key-n", Out.Number 101.0;
+    Out.Key "key-o", Out.Object [ Out.Key "inner key", Out.String "inner value" ];
+    Out.Key "key-l", Out.Array [ Out.String "list value" ];
+  ] in
+  let expected = Ok output in
+
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 4 valid 2";
+
+  result
 
 let test_parser_step4_invalid1 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step4/invalid.json" in
-  (* TODO: not implemented step4 invalid1 *)
-  ignore input;
-  true
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let expected = Error "Unsupported or invalid token type for object value. Got a token of `Unknown` with value `'list value'` while trying to parse a value." in
+
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 4 invalid 1";
+
+  result
 
 let run (): bool =
   let parser_tests = [
