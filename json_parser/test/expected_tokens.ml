@@ -1,94 +1,135 @@
 open Json_parser
 
 let pass1_tokens = [
-  Token_type.OpenBracket;
-  Token_type.String; Token_type.Comma;
-  Token_type.OpenBrace;
-  Token_type.String; Token_type.Colon;
-  Token_type.OpenBracket;
-  Token_type.String;
-  Token_type.CloseBracket;
-  Token_type.CloseBrace; Token_type.Comma;
-  Token_type.OpenBrace; Token_type.CloseBrace; Token_type.Comma;
-  Token_type.OpenBracket; Token_type.CloseBracket; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Bool; Token_type.Comma;
-  Token_type.Bool; Token_type.Comma;
-  Token_type.Null; Token_type.Comma;
+  Token_type.OpenBracket;                                                   (* [ *)
+  Token_type.String; Token_type.Comma;                                      (* "JSON Test Pattern pass1", *)
+  Token_type.OpenBrace;                                                     (* { *)
+  Token_type.String; Token_type.Colon;                                      (* "object with 1 member": *)
+  Token_type.OpenBracket;                                                   (* [ *)
+  Token_type.String;                                                        (* "array with 1 element" *)
+  Token_type.CloseBracket;                                                  (* ] *)
+  Token_type.CloseBrace; Token_type.Comma;                                  (* }, *)
+  Token_type.OpenBrace; Token_type.CloseBrace; Token_type.Comma;            (* {}, *)
+  Token_type.OpenBracket; Token_type.CloseBracket; Token_type.Comma;        (* [], *)
+  Token_type.Number; Token_type.Comma;                                      (* -42, *)
+  Token_type.Bool; Token_type.Comma;                                        (* true, *)
+  Token_type.Bool; Token_type.Comma;                                        (* false, *)
+  Token_type.Null; Token_type.Comma;                                        (* null, *)
 
-  Token_type.OpenBrace;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma;
+  Token_type.OpenBrace;                                                     (* { *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "integer": 1234567890, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "real": -9876.543210, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "e": 0.123456789e-12, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "E": 1.234567890E+34, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "":  23456789012E66, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "zero": 0, *)
+  Token_type.String; Token_type.Colon; Token_type.Number; Token_type.Comma; (* "one": 1, *)
 
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "space": " ", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "quote": "\"", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "backslash": "\\", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "controls": "\b\f\n\r\t", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "slash": "/ & \/", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "alpha": "abcdefghijklmnopqrstuvwyz", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "ALPHA": "ABCDEFGHIJKLMNOPQRSTUVWYZ", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "digit": "0123456789", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "0123456789": "digit", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "special": "`1~!@#$%^&*()_+-={':[,]}|;.</>?", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "hex": "\u0123\u4567\u89AB\uCDEF\uabcd\uef4A", *)
 
-  Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;   (* "true": true, *)
+  Token_type.String; Token_type.Colon; Token_type.Bool; Token_type.Comma;   (* "false": false, *)
 
-  Token_type.String; Token_type.Colon; Token_type.Null; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.Null; Token_type.Comma;   (* "null": null, *)
 
-  Token_type.String; Token_type.Colon; Token_type.OpenBracket; Token_type.CloseBracket; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.OpenBrace; Token_type.CloseBrace; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.OpenBracket; Token_type.CloseBracket; Token_type.Comma; (* "array":[  ], *)
+  Token_type.String; Token_type.Colon; Token_type.OpenBrace; Token_type.CloseBrace; Token_type.Comma;     (* "object":{  }, *)
 
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "address": "50 St. James Street", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "url": "http://www.JSON.org/", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "comment": "// /* <!-- --", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "# -- --> */": " ", *)
 
-  Token_type.String; Token_type.Colon;
-  Token_type.OpenBracket;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number;
-  Token_type.CloseBracket; Token_type.Comma;
+  Token_type.String; Token_type.Colon;                                      (* " s p a c e d " : *)
+  Token_type.OpenBracket;                                                   (* [ *)
+  Token_type.Number; Token_type.Comma;                                      (* 1, *)
+  Token_type.Number; Token_type.Comma;                                      (* 2 , *)
+  Token_type.Number; Token_type.Comma;                                      (* 3 *)
+  Token_type.Number; Token_type.Comma;                                      (* 4 , *)
+  Token_type.Number; Token_type.Comma;                                      (* 5        , *)
+  Token_type.Number; Token_type.Comma;                                      (* 6           , *)
+  Token_type.Number;                                                        (* 7        *)
+  Token_type.CloseBracket; Token_type.Comma;                                (* ], *)
+  Token_type.String; Token_type.Colon;                                      (* "compact": *)
+  Token_type.OpenBracket;                                                   (* [ *)
+  Token_type.Number; Token_type.Comma;                                      (* 1, *)
+  Token_type.Number; Token_type.Comma;                                      (* 2, *)
+  Token_type.Number; Token_type.Comma;                                      (* 3, *)
+  Token_type.Number; Token_type.Comma;                                      (* 4, *)
+  Token_type.Number; Token_type.Comma;                                      (* 5, *)
+  Token_type.Number; Token_type.Comma;                                      (* 6, *)
+  Token_type.Number;                                                        (* 7 *)
+  Token_type.CloseBracket; Token_type.Comma;                                (* ], *)
 
-  Token_type.String; Token_type.Colon;
-  Token_type.OpenBracket;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number;
-  Token_type.CloseBracket; Token_type.Comma;
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "jsontext": "{\"object with 1 member\":[\"array with 1 element\"]}", *)
+  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma; (* "quotes": "&#34; \u0022 %22 0x22 034 &#x22;", *)
+  Token_type.String; Token_type.Colon; Token_type.String;                   (* "\/\\\"\uCAFE\uBABE\uAB98\uFCDE\ubcda\uef4A\b\f\n\r\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?" : "A key can be any string" *)
 
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String; Token_type.Comma;
-  Token_type.String; Token_type.Colon; Token_type.String;
+  Token_type.CloseBrace; Token_type.Comma;                                  (* }, *)
 
-  Token_type.CloseBrace; Token_type.Comma;
+  Token_type.Number; Token_type.Comma;                                      (* 0.5 , *)
+  Token_type.Number; Token_type.Comma;                                      (* 98.6 *)
+  Token_type.Number; Token_type.Comma;                                      (* 99.44 *)
+  Token_type.Number; Token_type.Comma;                                      (* 1066, *)
+  Token_type.Number; Token_type.Comma;                                      (* 1e1, *)
+  Token_type.Number; Token_type.Comma;                                      (* 0.1e1, *)
+  Token_type.Number; Token_type.Comma;                                      (* 1e-1, *)
+  Token_type.Number; Token_type.Comma;                                      (* 1e00, *)
+  Token_type.Number; Token_type.Comma;                                      (* 2e+00, *)
+  Token_type.Number; Token_type.Comma;                                      (* 2e-00 *)
+  Token_type.String;                                                        (* "rosebud" *)
 
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.Number; Token_type.Comma;
-  Token_type.String;
+  Token_type.CloseBracket;                                                  (* ] *)
+]
 
-  Token_type.CloseBracket;
+let pass2_tokens = [
+  Token_type.OpenBracket;   (* 1 *)
+  Token_type.OpenBracket;   (* 2 *)
+  Token_type.OpenBracket;   (* 3 *)
+  Token_type.OpenBracket;   (* 4 *)
+  Token_type.OpenBracket;   (* 5 *)
+  Token_type.OpenBracket;   (* 6 *)
+  Token_type.OpenBracket;   (* 7 *)
+  Token_type.OpenBracket;   (* 8 *)
+  Token_type.OpenBracket;   (* 9 *)
+  Token_type.OpenBracket;   (* 10 *)
+  Token_type.OpenBracket;   (* 11 *)
+  Token_type.OpenBracket;   (* 12 *)
+  Token_type.OpenBracket;   (* 13 *)
+  Token_type.OpenBracket;   (* 14 *)
+  Token_type.OpenBracket;   (* 15 *)
+  Token_type.OpenBracket;   (* 16 *)
+  Token_type.OpenBracket;   (* 17 *)
+  Token_type.OpenBracket;   (* 18 *)
+  Token_type.OpenBracket;   (* 19 *)
+  Token_type.String;        (* "Not too deep" *)
+  Token_type.CloseBracket;  (* 1 *)
+  Token_type.CloseBracket;  (* 2 *)
+  Token_type.CloseBracket;  (* 3 *)
+  Token_type.CloseBracket;  (* 4 *)
+  Token_type.CloseBracket;  (* 5 *)
+  Token_type.CloseBracket;  (* 6 *)
+  Token_type.CloseBracket;  (* 7 *)
+  Token_type.CloseBracket;  (* 8 *)
+  Token_type.CloseBracket;  (* 9 *)
+  Token_type.CloseBracket;  (* 10 *)
+  Token_type.CloseBracket;  (* 11 *)
+  Token_type.CloseBracket;  (* 12 *)
+  Token_type.CloseBracket;  (* 13 *)
+  Token_type.CloseBracket;  (* 14 *)
+  Token_type.CloseBracket;  (* 15 *)
+  Token_type.CloseBracket;  (* 16 *)
+  Token_type.CloseBracket;  (* 17 *)
+  Token_type.CloseBracket;  (* 18 *)
+  Token_type.CloseBracket;  (* 19 *)
 ]
