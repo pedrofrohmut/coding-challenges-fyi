@@ -44,10 +44,11 @@ let check_tokens expected_tokens lex =
     let lx, token = Lexer.next_token lx in
     match token with
     | None -> []
-    | Some token -> token.token_type :: get_tokens lx
+    (* | Some token -> token.token_type :: get_tokens lx *)
+    | Some token -> token :: get_tokens lx
   in
 
-  let rec match_tokens xs ys =
+  let rec match_tokens (xs: Token.t list) (ys: Token_type.t list): bool =
     (* xs lexer tokens and ys expected tokens *)
     match xs, ys with
     | [], [] -> true
@@ -56,12 +57,17 @@ let check_tokens expected_tokens lex =
       false
     )
     | x :: xt, y :: yt ->
-       if x <> y then (
-         let y = Token_type.to_string y in
-         let x = Token_type.to_string x in
-         Printf.printf "Token_types doesn't match. Expected `%s` but got `%s` instead.\n" y x;
+       if x.token_type <> y then (
+         let y_type = Token_type.to_string y in
+         let x_type = Token_type.to_string x.token_type in
+         print_endline "\n################################################################################\n";
+         print_endline "Match tokens error:\n";
+         printf "Token_types doesn't match. Expected `%s` but got `%s` instead.\n\n" y_type x_type;
+         Token.print_token x;
+         print_endline "\n################################################################################\n";
          false
        )
+
        else
          match_tokens xt yt
   in

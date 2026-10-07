@@ -83,13 +83,14 @@ let get_string_content (lex: t): t * string =
     | Some '\\' -> (
        match get_ch_at (i + 1) lex with
        | None -> failwith "Invalid end of string. String ended after a backslash."
-       | Some '"' -> loop (i + 2) lex
+       | Some '"' | Some '\\' -> loop (i + 2) lex
        | _ -> loop (i + 1) lex
     )
     | Some x -> loop (i + 1) lex
   in
 
   if (peek_ch lex) = Some '"' then
+    let lex = incr_cursor lex in
     lex, ""
 
   else
@@ -157,11 +158,12 @@ let rec next_token (lex: t): t * Token.t option =
               | "true" | "false" -> Token_type.Bool
               | "null" -> Token_type.Null
               | _ ->
-                 if is_number_string content then
+                 if is_number_string (String.trim content) then
                    Token_type.Number
                  else
                    Token_type.Unknown
             in
+            let content = if token_type = Token_type.Unknown then content else String.trim content in
             lex, Token.create token_type content start_line start_column
        in
        let lex = incr_cursor lex in

@@ -8,3 +8,4 @@ type t = private {
 }
 
 val create: Token_type.t -> string -> int -> int -> t
+val print_token: t -> unit

@@ -255,6 +255,19 @@ let test_lexer_step4_invalid1 (): bool =
 
   result
 
+let test_lexer_step5_pass1 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/pass1.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = Expected_tokens.pass1_tokens in
+
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 pass 1";
+
+  result
+
 let run (): bool =
   let lexer_tests = [
     test_lexer_step1_valid1;
@@ -273,6 +286,8 @@ let run (): bool =
     test_lexer_step4_valid1;
     test_lexer_step4_valid2;
     test_lexer_step4_invalid1;
+
+    test_lexer_step5_pass1;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test ())) lexer_tests in
