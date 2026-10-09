@@ -88,12 +88,12 @@ let rec string_of_output = function
   | Parser.Output.Null -> "null"
   | Parser.Output.Bool b -> string_of_bool b
   | Parser.Output.Number n -> string_of_float n
-  | Parser.Output.String s -> Printf.sprintf "%S" s
+  | Parser.Output.String s -> Printf.sprintf "`%s`" s
   | Parser.Output.Array xs ->
       "[ " ^ String.concat "," (List.map string_of_output xs) ^ " ]"
   | Parser.Output.Object kvs ->
       let pair (Parser.Output.Key k, v) =
-        Printf.sprintf "%S: %s" k (string_of_output v)
+        Printf.sprintf "%s: %s" k (string_of_output v)
       in
       "{ " ^ String.concat ", " (List.map pair kvs) ^ " }"
 

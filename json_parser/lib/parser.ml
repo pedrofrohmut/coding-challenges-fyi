@@ -103,7 +103,10 @@ and parse_value (par: t): t * Output.t =
      match token.token_type with
      | Token_type.OpenBrace -> parse_object par
      | Token_type.OpenBracket -> parse_array par
-     | Token_type.String -> par, Output.String token.literal
+     | Token_type.String -> (
+       printf "Token literal `%s` in parse_value.\n" token.literal;
+       par, Output.String token.literal
+     )
      | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
      | Token_type.Null -> par, Output.Null
      | Token_type.Number ->
@@ -122,6 +125,7 @@ and parse_array (par: t): t * Output.t =
       let par, value = parse_value par in
       let par = next_token par in
       let acc = value :: acc in
+      let par = if is_token_of par.curr Token_type.Comma then next_token par else par in
       loop acc par
   in
   let par = next_token par in (* jump to the first value of the array or the close bracket *)
@@ -132,12 +136,14 @@ let run (par: t): (Output.t, string) result =
   match par.curr with
   | None -> Error "Empty json"
   | Some token ->
-     match token.token_type with
-     | Token_type.OpenBrace -> (
-        try
+     try
+       match token.token_type with
+       | Token_type.OpenBrace ->
           let _, output = parse_object par in
           Ok output
-        with
-          Failure msg -> Error msg
-     )
-     | _ -> Error "Invalid or not covered token found at parser run, matching the first token"
+       | Token_type.OpenBracket ->
+          let _, output = parse_array par in
+          Ok output
+       | _ -> Error "Invalid or not covered token found at parser run, matching the first token"
+     with
+       Failure msg -> Error msg

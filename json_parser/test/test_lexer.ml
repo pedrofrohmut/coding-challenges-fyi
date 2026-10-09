@@ -262,6 +262,8 @@ let test_lexer_step5_pass1 (): bool =
   let expected_tokens = Expected_tokens.pass1_tokens in
   let result = Utils_for_tests.check_tokens expected_tokens lex in
 
+  (* Lexer.print_all_tokens input; *)
+
   if not result then
     Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 pass 1";
 
