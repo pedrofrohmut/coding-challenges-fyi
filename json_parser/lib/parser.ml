@@ -104,7 +104,7 @@ and parse_value (par: t): t * Output.t =
      | Token_type.OpenBrace -> parse_object par
      | Token_type.OpenBracket -> parse_array par
      | Token_type.String -> (
-       printf "Token literal `%s` in parse_value.\n" token.literal;
+       (* printf "Token literal `%s` in parse_value.\n" token.literal; *)
        par, Output.String token.literal
      )
      | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
