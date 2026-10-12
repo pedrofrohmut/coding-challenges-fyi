@@ -10,6 +10,17 @@ module Output = struct
     | String of string
     | Object of (key * t) list
     | Array of t list
+
+  let kind (x: t): string =
+    match x with
+    | Null -> "Null"
+    | Bool _ -> "Bool"
+    | Number _ -> "Number"
+    | String _ -> "String"
+    | Object _ -> "Object"
+    | Array _ -> "Array"
+
+  let string_of_key (Key s) = s
 end
 
 type t = {

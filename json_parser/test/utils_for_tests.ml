@@ -1,6 +1,8 @@
 open Json_parser
 open Printf
 
+module Out = Parser.Output
+
 let prefix_path file_path =
   let cwd = Sys.getcwd () in
   let res = Utils.split_string "_build" cwd in
@@ -75,15 +77,6 @@ let check_tokens expected_tokens lex =
   let tokens = get_tokens lex in
   match_tokens tokens expected_tokens
 
-let check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.Output.t, string) result): bool =
-  match expected, parsed with
-  | Error _, Ok _ | Ok _, Error _ -> false
-  | Ok exp_ok, Ok par_ok -> exp_ok = par_ok
-  | Error exp_err, Error par_err ->
-     if exp_err <> par_err then (* Different messages is just an warn not a faling test. *)
-       printf "WARN: The error messages don't match. Expected err: `%s` and parser err: `%s`\n" exp_err par_err;
-     true
-
 let rec string_of_output = function
   | Parser.Output.Null -> "null"
   | Parser.Output.Bool b -> string_of_bool b
@@ -96,6 +89,48 @@ let rec string_of_output = function
         Printf.sprintf "%s: %s" k (string_of_output v)
       in
       "{ " ^ String.concat ", " (List.map pair kvs) ^ " }"
+
+let rec check_parsed (expected: (Parser.Output.t, string) result) (parsed: (Parser.Output.t, string) result): bool =
+  match expected, parsed with
+  | Error msg, Ok _ -> print_endline "Expected parsed to be an Error but got a valid output instead."; false
+  | Ok _, Error _ -> print_endline "Expected parsed to be a valid output but got a Error instead."; false
+  | Error exp_err, Error par_err ->
+     if exp_err <> par_err then
+       (* Different messages is just an warn not a faling test. *)
+       printf "WARN: The error messages don't match. Expected err: `%s` and parser err: `%s`\n" exp_err par_err; true
+  | Ok exp_out, Ok par_out ->
+     if exp_out = par_out then true else (
+       print_string "Output doesn't match. ";
+       match exp_out, par_out with
+       | Array exps, Array pars -> List.iter2 match_values exps pars; false
+       | Object exps, Object pars -> List.iter2 match_pairs exps pars; false
+       | _ -> failwith "Invalid output to match. Only support arrays and objects."
+     )
+
+and match_values (exp_val: Parser.Output.t) (par_val: Parser.Output.t): unit =
+  if exp_val = par_val then () else (
+    let par_str = string_of_output par_val in
+    match exp_val, par_val with
+    | Out.Null, _ -> printf "Expected `Output.Null` but got `%s` instead.\n" par_str
+    | Out.Bool b, Out.Bool _ -> printf "Expected `Output.Bool %s` but got `Output.Bool %s` instead.\n" (string_of_bool b) par_str
+    | Out.Number n, Out.Number _ -> printf "Expected `Output.Number %s` but got `Output.Number %s` instead.\n" (string_of_float n) par_str
+    | Out.String s, Out.String s2 -> printf "Expected `Output.String \"%s\"` but got `Output.String \"%s\"` instead.\n" s s2
+    | Out.Array exps, Out.Array pars -> List.iter2 match_values exps pars
+    | Out.Object exps, Out.Object pars -> List.iter2 match_pairs exps pars
+    | _ -> failwith "Invalid expected output"
+  )
+
+and match_pairs (exp_pair: Parser.Output.key * Parser.Output.t) (par_pair: Parser.Output.key * Parser.Output.t): unit =
+  if exp_pair = par_pair then () else (
+    let exp_key, exp_val = exp_pair in
+    let par_key, par_val = par_pair in
+    if exp_key <> par_key then
+      printf "Expected object key to be `%s` but got `%s` instead.\n"
+        (Parser.Output.string_of_key exp_key) (Parser.Output.string_of_key par_key);
+
+    if exp_val = par_val then () else
+      match_values exp_val par_val
+  )
 
 let print_parsed = function
   | Error msg -> printf "Parsed is 'Error `%s`'\n" msg

@@ -3,7 +3,7 @@ open Json_parser
 
 let () =
   let prefix = Sys.getcwd () in
-  let full_path = prefix ^ "/test/json_inputs/step5/pass1_alt2.json" in
+  let full_path = prefix ^ "/test/json_inputs/step5/pass2.json" in
 
   if not (Sys.file_exists full_path) then (
     print_endline "File not found.";

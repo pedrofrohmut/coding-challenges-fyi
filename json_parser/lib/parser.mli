@@ -8,6 +8,9 @@ module Output : sig
     | String of string
     | Object of (key * t) list
     | Array of t list
+
+  val kind: t -> string
+  val string_of_key: key -> string
 end
 
 type t = private {

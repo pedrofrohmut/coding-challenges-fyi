@@ -74,3 +74,45 @@ let pass1_output = Out.Array [
 
   Out.String "rosebud";
 ]
+
+let pass2_output = Out.Array [
+  Out.Array [                                                       (* depth 1 *)
+    Out.Array [                                                     (* depth 2 *)
+      Out.Array [                                                   (* depth 3 *)
+        Out.Array [                                                 (* depth 4 *)
+          Out.Array [                                               (* depth 5 *)
+            Out.Array [                                             (* depth 6 *)
+              Out.Array [                                           (* depth 7 *)
+                Out.Array [                                         (* depth 8 *)
+                  Out.Array [                                       (* depth 9 *)
+                    Out.Array [                                     (* depth 10 *)
+                      Out.Array [                                   (* depth 11 *)
+                        Out.Array [                                 (* depth 12 *)
+                          Out.Array [                               (* depth 13 *)
+                            Out.Array [                             (* depth 14 *)
+                              Out.Array [                           (* depth 15 *)
+                                Out.Array [                         (* depth 16 *)
+                                  Out.Array [                       (* depth 17 *)
+                                    Out.Array [                     (* depth 18 *)
+                                      Out.Array [                   (* depth 19 *)
+                                        Out.String "Not too deep";
+                                      ];
+                                    ];
+                                  ];
+                                ];
+                              ];
+                            ];
+                          ];
+                        ];
+                      ];
+                    ];
+                  ];
+                ];
+              ];
+            ];
+          ];
+        ];
+      ];
+    ];
+  ];
+]
