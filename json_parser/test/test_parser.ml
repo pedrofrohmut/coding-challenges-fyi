@@ -260,8 +260,18 @@ let test_parser_step5_pass2 (): bool =
 
 let test_parser_step5_pass3 (): bool =
   let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/pass3.json" in
-  ignore input;
-  true
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let output = Parser_outputs.pass3_output in
+  let expected = Ok output in
+  let result = Utils_for_tests.check_parsed expected parsed in
+
+  if not result then
+    Utils_for_tests.test_parser_failwith parsed "✗ FAIL: Parser Failed at step 5 pass 3";
+
+  result
 
 let run (): bool =
   let parser_tests = [

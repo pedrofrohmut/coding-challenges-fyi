@@ -115,3 +115,10 @@ let pass2_output =
       ];
     ];
   ]
+
+let pass3_output = Out.Object [
+  Out.Key "JSON Test Pattern pass3", Out.Object [
+    Out.Key "The outermost value", Out.String "must be an object or array.";
+    Out.Key "In this test", Out.String "It is an object.";
+  ];
+]
