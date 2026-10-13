@@ -3,7 +3,7 @@ open Json_parser
 
 let () =
   let prefix = Sys.getcwd () in
-  let full_path = prefix ^ "/test/json_inputs/step5/pass2.json" in
+  let full_path = prefix ^ "/test/json_inputs/step5/fail1.json" in
 
   if not (Sys.file_exists full_path) then (
     print_endline "File not found.";
@@ -22,10 +22,9 @@ let () =
     let parsed = Parser.run par in
     match parsed with
     | Ok output ->
-        ignore output;
-        print_endline "Ok";
-        exit 0
+       ignore output;
+       print_endline "Ok";
+       exit 0
     | Error msg ->
-        print_endline "Error";
-        print_endline msg;
-        exit 1
+       Printf.printf "Error `%s`\n" msg;
+       exit 1

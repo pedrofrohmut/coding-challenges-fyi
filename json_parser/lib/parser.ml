@@ -155,6 +155,6 @@ let run (par: t): (Output.t, string) result =
        | Token_type.OpenBracket ->
           let _, output = parse_array par in
           Ok output
-       | _ -> Error "Invalid or not covered token found at parser run, matching the first token"
+       | _ -> Error "Parser Error: Invalid first token found. A JSON payload must be an object or an array."
      with
        Failure msg -> Error msg
