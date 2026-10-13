@@ -117,7 +117,7 @@ and match_values (exp_val: Parser.Output.t) (par_val: Parser.Output.t): unit =
     | Out.String s, Out.String s2 -> printf "Expected `Output.String \"%s\"` but got `Output.String \"%s\"` instead.\n" s s2
     | Out.Array exps, Out.Array pars -> List.iter2 match_values exps pars
     | Out.Object exps, Out.Object pars -> List.iter2 match_pairs exps pars
-    | _ -> failwith "Invalid expected output"
+    | _ -> printf "Expected output kind of `%s` but got `%s` instead.\n" (Out.kind exp_val) (Out.kind par_val)
   )
 
 and match_pairs (exp_pair: Parser.Output.key * Parser.Output.t) (par_pair: Parser.Output.key * Parser.Output.t): unit =

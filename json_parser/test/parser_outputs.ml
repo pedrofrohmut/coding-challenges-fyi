@@ -75,7 +75,7 @@ let pass1_output = Out.Array [
   Out.String "rosebud";
 ]
 
-let pass2_output = Out.Array [
+let pass2_output =
   Out.Array [                                                       (* depth 1 *)
     Out.Array [                                                     (* depth 2 *)
       Out.Array [                                                   (* depth 3 *)
@@ -114,5 +114,4 @@ let pass2_output = Out.Array [
         ];
       ];
     ];
-  ];
-]
+  ]
