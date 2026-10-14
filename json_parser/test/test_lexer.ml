@@ -491,6 +491,396 @@ let test_lexer_step5_fail12 (): bool =
 
   result
 
+let test_lexer_step5_fail13 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail13.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Colon;
+    Token_type.Number;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 13";
+
+  result
+
+let test_lexer_step5_fail14 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail14.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Colon;
+    Token_type.Number;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 14";
+
+  result
+
+let test_lexer_step5_fail15 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail15.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 15";
+
+  result
+
+let test_lexer_step5_fail16 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail16.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 16";
+
+  result
+
+let test_lexer_step5_fail17 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail17.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 17";
+
+  result
+
+let test_lexer_step5_fail18 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail18.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;  (* 1 *)
+    Token_type.OpenBracket;  (* 2 *)
+    Token_type.OpenBracket;  (* 3 *)
+    Token_type.OpenBracket;  (* 4 *)
+    Token_type.OpenBracket;  (* 5 *)
+    Token_type.OpenBracket;  (* 6 *)
+    Token_type.OpenBracket;  (* 7 *)
+    Token_type.OpenBracket;  (* 8 *)
+    Token_type.OpenBracket;  (* 9 *)
+    Token_type.OpenBracket;  (* 10 *)
+    Token_type.OpenBracket;  (* 11 *)
+    Token_type.OpenBracket;  (* 12 *)
+    Token_type.OpenBracket;  (* 13 *)
+    Token_type.OpenBracket;  (* 14 *)
+    Token_type.OpenBracket;  (* 15 *)
+    Token_type.OpenBracket;  (* 16 *)
+    Token_type.OpenBracket;  (* 17 *)
+    Token_type.OpenBracket;  (* 18 *)
+    Token_type.OpenBracket;  (* 19 *)
+    Token_type.OpenBracket;  (* 20 *)
+    Token_type.String;
+    Token_type.CloseBracket; (* 1 *)
+    Token_type.CloseBracket; (* 2 *)
+    Token_type.CloseBracket; (* 3 *)
+    Token_type.CloseBracket; (* 4 *)
+    Token_type.CloseBracket; (* 5 *)
+    Token_type.CloseBracket; (* 6 *)
+    Token_type.CloseBracket; (* 7 *)
+    Token_type.CloseBracket; (* 8 *)
+    Token_type.CloseBracket; (* 9 *)
+    Token_type.CloseBracket; (* 10 *)
+    Token_type.CloseBracket; (* 11 *)
+    Token_type.CloseBracket; (* 12 *)
+    Token_type.CloseBracket; (* 13 *)
+    Token_type.CloseBracket; (* 14 *)
+    Token_type.CloseBracket; (* 15 *)
+    Token_type.CloseBracket; (* 16 *)
+    Token_type.CloseBracket; (* 17 *)
+    Token_type.CloseBracket; (* 18 *)
+    Token_type.CloseBracket; (* 19 *)
+    Token_type.CloseBracket; (* 20 *)
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 18";
+
+  result
+
+let test_lexer_step5_fail19 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail19.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Null;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 19";
+
+  result
+
+let test_lexer_step5_fail20 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail20.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Colon;
+    Token_type.Colon;
+    Token_type.Null;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 20";
+
+  result
+
+let test_lexer_step5_fail21 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail21.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Comma;
+    Token_type.Null;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 21";
+
+  result
+
+let test_lexer_step5_fail22 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail22.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.Colon;
+    Token_type.Bool;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 22";
+
+  result
+
+let test_lexer_step5_fail23 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail23.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.Comma;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 23";
+
+  result
+
+let test_lexer_step5_fail24 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail24.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 24";
+
+  result
+
+let test_lexer_step5_fail25 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail25.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 25";
+
+  result
+
+let test_lexer_step5_fail26 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail26.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 26";
+
+  result
+
+let test_lexer_step5_fail27 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail27.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 27";
+
+  result
+
+let test_lexer_step5_fail28 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail28.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 28";
+
+  result
+
+let test_lexer_step5_fail29 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail29.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 29";
+
+  result
+
+let test_lexer_step5_fail30 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail30.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 30";
+
+  result
+
+let test_lexer_step5_fail31 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail31.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.Unknown;
+    Token_type.CloseBracket;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 31";
+
+  result
+
+let test_lexer_step5_fail32 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail32.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBrace;
+    Token_type.String;
+    Token_type.Colon;
+    Token_type.Bool;
+    Token_type.Comma;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 32";
+
+  result
+
+let test_lexer_step5_fail33 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail33.json" in
+  let lex = Lexer.create input in
+
+  let expected_tokens = [
+    Token_type.OpenBracket;
+    Token_type.String;
+    Token_type.CloseBrace;
+  ] in
+  let result = Utils_for_tests.check_tokens expected_tokens lex in
+
+  if not result then
+    Utils_for_tests.test_lexer_failwith input "✗ FAIL: Lexer Failed at step 5 fail 33";
+
+  result
+
 let run (): bool =
   let lexer_tests = [
     test_lexer_step1_valid1;
@@ -526,6 +916,27 @@ let run (): bool =
     test_lexer_step5_fail10;
     test_lexer_step5_fail11;
     test_lexer_step5_fail12;
+    test_lexer_step5_fail13;
+    test_lexer_step5_fail14;
+    test_lexer_step5_fail15;
+    test_lexer_step5_fail16;
+    test_lexer_step5_fail17;
+    test_lexer_step5_fail18;
+    test_lexer_step5_fail19;
+    test_lexer_step5_fail20;
+    test_lexer_step5_fail21;
+    test_lexer_step5_fail22;
+    test_lexer_step5_fail23;
+    test_lexer_step5_fail24;
+    test_lexer_step5_fail25;
+    test_lexer_step5_fail26;
+    test_lexer_step5_fail27;
+    test_lexer_step5_fail28;
+    test_lexer_step5_fail29;
+    test_lexer_step5_fail30;
+    test_lexer_step5_fail31;
+    test_lexer_step5_fail32;
+    test_lexer_step5_fail33;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test ())) lexer_tests in
