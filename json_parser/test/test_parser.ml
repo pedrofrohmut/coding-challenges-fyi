@@ -287,6 +287,21 @@ let test_parser_step5_fail1 (): bool =
 
   result
 
+let test_parser_step5_fail2 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail2.json" in
+  let expected = Error "Unexpected end of input found parsing an array" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 2"
+
+let test_parser_step5_fail3 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail3.json" in
+  let expected = Error "Expected String token for the object key but got `Unknown` instead." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 3"
+
+let test_parser_step5_fail4 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail4.json" in
+  let expected = Error "Extra comma found before closing the array" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 4"
+
 let run (): bool =
   let parser_tests = [
     test_parser_step1_valid1;
@@ -311,6 +326,9 @@ let run (): bool =
     test_parser_step5_pass3;
 
     test_parser_step5_fail1;
+    test_parser_step5_fail2;
+    test_parser_step5_fail3;
+    test_parser_step5_fail4;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test())) parser_tests in

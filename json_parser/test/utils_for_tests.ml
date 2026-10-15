@@ -140,6 +140,17 @@ let test_parser_failwith (parsed: (Parser.Output.t, string) result) (msg: string
   print_endline msg;
   print_parsed parsed
 
+let test_parser (input: string) (expected: (Parser.Output.t, string) result) (msg: string): bool =
+  let lex = Lexer.create input in
+  let par = Parser.create lex in
+  let parsed = Parser.run par in
+
+  let result = check_parsed expected parsed in
+  if not result then
+    test_parser_failwith parsed msg;
+
+  result
+
 let test_lexer_failwith (input: string) (msg: string): unit =
   Lexer.print_all_tokens input;
   print_endline msg

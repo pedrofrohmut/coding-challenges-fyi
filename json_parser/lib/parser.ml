@@ -130,15 +130,23 @@ and parse_value (par: t): t * Output.t =
 
 and parse_array (par: t): t * Output.t =
   let rec loop acc par =
-    if is_token_of par.curr Token_type.CloseBracket then
-      par, List.rev acc
-    else
-      let par, value = parse_value par in
-      let par = next_token par in
-      let acc = value :: acc in
-      let par = if is_token_of par.curr Token_type.Comma then next_token par else par in
-      loop acc par
+    match par.curr with
+    | None -> failwith "Unexpected end of input found parsing an array"
+    | Some token ->
+       match token.token_type with
+       | Token_type.CloseBracket -> par, List.rev acc
+       | Token_type.Comma ->
+          if is_token_of par.peek Token_type.CloseBracket then
+            failwith "Extra comma found before closing the array"
+          else
+            let par = next_token par in
+            loop acc par
+       | _ ->
+          let par, value = parse_value par in
+          let par = next_token par in
+          loop (value :: acc) par
   in
+
   let par = next_token par in (* jump to the first value of the array or the close bracket *)
   let par, arr_body = loop [] par in
   par, Output.Array arr_body
