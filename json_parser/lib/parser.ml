@@ -49,6 +49,20 @@ let to_tokentype_string (token: Token.t option): string =
   | None -> "None"
   | Some token -> Token_type.to_string token.token_type
 
+let has_leading_zero (str_num: string): bool =
+  let first_char = String.get str_num 0 in
+  if not (first_char = '0') then
+    false
+  else
+    let len = String.length str_num in
+    if len = 1 then
+      false
+    else
+      let second_char = String.get str_num 1 in
+      if second_char = '.' then
+        false
+      else
+        true
 
 let rec parse_object (par: t): t * Output.t =
   let output = Output.Object [] in
@@ -97,13 +111,17 @@ and parse_object_body (par: t): t * (Output.key * Output.t) list =
           par, List.rev acc
 
         else
-          let par = next_token par in
+          let par = next_token par in (* curr should be comma *)
           if not (is_token_of par.curr Token_type.Comma) then
             failwith (sprintf "Expected Comma after the value of key/value pair of an object when this object is not closed yet. Got a token of `%s`" (to_tokentype_string par.curr))
 
           else
-            let par = next_token par in (* curr should be next key *)
-            loop acc par
+            if is_token_of par.peek Token_type.CloseBrace then
+              failwith "Extra comma found before closing the object"
+
+            else
+              let par = next_token par in (* curr should be next key *)
+              loop acc par
   in
   loop [] par
 
@@ -121,11 +139,14 @@ and parse_value (par: t): t * Output.t =
      | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
      | Token_type.Null -> par, Output.Null
      | Token_type.Number ->
-        let num = float_of_string_opt token.literal in
-        if Option.is_none num then
-          failwith "Invalid number found in the token literal trying to parse a value"
+        if has_leading_zero token.literal then
+          failwith "Numbers cannot have leading zeroes"
         else
-          par, Output.Number (Option.get num)
+          let num = float_of_string_opt token.literal in
+          if Option.is_none num then
+            failwith "Invalid number found in the token literal trying to parse a value"
+          else
+            par, Output.Number (Option.get num)
      | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s` with value `%s` while trying to parse a value." (to_tokentype_string par.curr) token.literal)
 
 and parse_array (par: t): t * Output.t =
@@ -146,23 +167,31 @@ and parse_array (par: t): t * Output.t =
           let par = next_token par in
           loop (value :: acc) par
   in
-
   let par = next_token par in (* jump to the first value of the array or the close bracket *)
-  let par, arr_body = loop [] par in
-  par, Output.Array arr_body
+  if is_token_of par.curr Token_type.Comma then
+    failwith "Expected value but found a comma starting an array"
+  else
+    let par, arr_body = loop [] par in
+    par, Output.Array arr_body
 
 let run (par: t): (Output.t, string) result =
   match par.curr with
   | None -> Error "Empty json"
   | Some token ->
      try
-       match token.token_type with
-       | Token_type.OpenBrace ->
-          let _, output = parse_object par in
-          Ok output
-       | Token_type.OpenBracket ->
-          let _, output = parse_array par in
-          Ok output
-       | _ -> Error "Parser Error: Invalid first token found. A JSON payload must be an object or an array."
+       let par, result =
+         match token.token_type with
+         | Token_type.OpenBrace ->
+            let par, output = parse_object par in
+            par, Ok output
+         | Token_type.OpenBracket ->
+            let par, output = parse_array par in
+            par, Ok output
+         | _ -> par, Error "Parser Error: Invalid first token found. A JSON payload must be an object or an array."
+       in
+       if not (Option.is_none par.peek) then
+         failwith "Unexpected continuation of the input. Input not ending after the the root element closing character."
+       else
+         result
      with
        Failure msg -> Error msg

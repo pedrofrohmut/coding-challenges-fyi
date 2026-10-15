@@ -95,7 +95,7 @@ let test_parser_step2_invalid1 (): bool =
   let par = Parser.create lex in
   let parsed = Parser.run par in
 
-  let expected = Error "Expected String token for the object key but got `CloseBrace` instead." in
+  let expected = Error "Extra comma found before closing the object" in
 
   let result = Utils_for_tests.check_parsed expected parsed in
 
@@ -302,6 +302,51 @@ let test_parser_step5_fail4 (): bool =
   let expected = Error "Extra comma found before closing the array" in
   Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 4"
 
+let test_parser_step5_fail5 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail5.json" in
+  let expected = Error "Extra comma found before closing the array" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 5"
+
+let test_parser_step5_fail6 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail6.json" in
+  let expected = Error "Expected value but found a comma starting an array" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 6"
+
+let test_parser_step5_fail7 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail7.json" in
+  let expected = Error "Unexpected continuation of the input. Input not ending after the the root element closing character." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 7"
+
+let test_parser_step5_fail8 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail8.json" in
+  let expected = Error "Unexpected continuation of the input. Input not ending after the the root element closing character." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 8"
+
+let test_parser_step5_fail9 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail9.json" in
+  let expected = Error "Extra comma found before closing the object" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 9"
+
+let test_parser_step5_fail10 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail10.json" in
+  let expected = Error "Unexpected continuation of the input. Input not ending after the the root element closing character." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 10"
+
+let test_parser_step5_fail11 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail11.json" in
+  let expected = Error "Unsupported or invalid token type for object value. Got a token of `Unknown` with value `1 + 2` while trying to parse a value." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 11"
+
+let test_parser_step5_fail12 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail12.json" in
+  let expected = Error "Unsupported or invalid token type for object value. Got a token of `Unknown` with value `alert()` while trying to parse a value." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 12"
+
+let test_parser_step5_fail13 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail13.json" in
+  let expected = Error "Numbers cannot have leading zeroes" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 13"
+
 let run (): bool =
   let parser_tests = [
     test_parser_step1_valid1;
@@ -329,6 +374,15 @@ let run (): bool =
     test_parser_step5_fail2;
     test_parser_step5_fail3;
     test_parser_step5_fail4;
+    test_parser_step5_fail5;
+    test_parser_step5_fail6;
+    test_parser_step5_fail7;
+    test_parser_step5_fail8;
+    test_parser_step5_fail9;
+    test_parser_step5_fail10;
+    test_parser_step5_fail11;
+    test_parser_step5_fail12;
+    test_parser_step5_fail13;
   ] in
 
   let failed_tests = List.filter (fun test -> not (test())) parser_tests in
