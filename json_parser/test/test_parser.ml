@@ -347,6 +347,16 @@ let test_parser_step5_fail13 (): bool =
   let expected = Error "Numbers cannot have leading zeroes" in
   Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 13"
 
+let test_parser_step5_fail14 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail14.json" in
+  let expected = Error "Numbers cannot be hexadecimal" in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 14"
+
+let test_parser_step5_fail15 (): bool =
+  let input = Utils_for_tests.get_input_from_file "test/json_inputs/step5/fail15.json" in
+  let expected = Error "Invalid escape chars found in the string content: `Illegal backslash escape: \\x15`." in
+  Utils_for_tests.test_parser input expected "✗ FAIL: Parser Failed at step 5 fail 15"
+
 let run (): bool =
   let parser_tests = [
     test_parser_step1_valid1;
@@ -383,6 +393,26 @@ let run (): bool =
     test_parser_step5_fail11;
     test_parser_step5_fail12;
     test_parser_step5_fail13;
+    test_parser_step5_fail14;
+    test_parser_step5_fail15;
+    (* test_parser_step5_fail16; *)
+    (* test_parser_step5_fail17; *)
+    (* test_parser_step5_fail18; *)
+    (* test_parser_step5_fail19; *)
+    (* test_parser_step5_fail20; *)
+    (* test_parser_step5_fail21; *)
+    (* test_parser_step5_fail22; *)
+    (* test_parser_step5_fail23; *)
+    (* test_parser_step5_fail24; *)
+    (* test_parser_step5_fail25; *)
+    (* test_parser_step5_fail26; *)
+    (* test_parser_step5_fail27; *)
+    (* test_parser_step5_fail28; *)
+    (* test_parser_step5_fail29; *)
+    (* test_parser_step5_fail30; *)
+    (* test_parser_step5_fail31; *)
+    (* test_parser_step5_fail32; *)
+    (* test_parser_step5_fail33; *)
   ] in
 
   let failed_tests = List.filter (fun test -> not (test())) parser_tests in

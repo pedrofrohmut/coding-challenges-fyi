@@ -49,8 +49,17 @@ let to_tokentype_string (token: Token.t option): string =
   | None -> "None"
   | Some token -> Token_type.to_string token.token_type
 
-let has_leading_zero (str_num: string): bool =
-  let first_char = String.get str_num 0 in
+let number_is_hex (str_num: string): bool =
+  if String.length str_num <= 2 then
+    false
+  else
+    let first_char = String.get str_num 0 in
+    let second_char = String.get str_num 1 in
+    first_char = '0' && second_char = 'x'
+
+(* Not supporting hexadecimals here since they are not valid and the support is not needed *)
+let number_has_leading_zero (str_num: string): bool =
+  let first_char =  String.get str_num 0 in
   if not (first_char = '0') then
     false
   else
@@ -63,6 +72,30 @@ let has_leading_zero (str_num: string): bool =
         false
       else
         true
+
+let string_get_opt (s: string) (i: int): char option =
+  if i >= (String.length s) then
+    None
+  else
+    Some (String.get s i)
+
+let string_has_invalid_escape_char (s: string): bool =
+  let rec loop i src =
+    let first = string_get_opt src i in
+    match first with
+    | None -> false (* End of string *)
+    | Some '\\' ->
+       let second = string_get_opt src (i + 1) in
+       if Option.is_none second then
+         failwith (sprintf "Unexpected end of string after backslash found in `%s`\n" src)
+       else (
+         match Option.get second with
+         | '"' | '\\' | 'b' | 'f' | 'n' | 'r' | 't' | '/' | 'u' -> loop (i + 2) src
+         | _ -> true
+       )
+    | Some _ -> loop (i + 1) src
+  in
+  loop 0 s
 
 let rec parse_object (par: t): t * Output.t =
   let output = Output.Object [] in
@@ -134,19 +167,26 @@ and parse_value (par: t): t * Output.t =
      | Token_type.OpenBracket -> parse_array par
      | Token_type.String -> (
        (* printf "Token literal `%s` in parse_value.\n" token.literal; *)
-       par, Output.String token.literal
+       if string_has_invalid_escape_char token.literal then
+         failwith (sprintf "Invalid escape chars found in the string content: `%s`." token.literal)
+       else
+         par, Output.String token.literal
      )
      | Token_type.Bool -> par, Output.Bool (bool_of_string token.literal)
      | Token_type.Null -> par, Output.Null
      | Token_type.Number ->
-        if has_leading_zero token.literal then
-          failwith "Numbers cannot have leading zeroes"
+        if number_is_hex token.literal then
+          (* you have to check for hex before leading zeroes *)
+          failwith "Numbers cannot be hexadecimal"
         else
-          let num = float_of_string_opt token.literal in
-          if Option.is_none num then
-            failwith "Invalid number found in the token literal trying to parse a value"
+          if number_has_leading_zero token.literal then
+            failwith "Numbers cannot have leading zeroes"
           else
-            par, Output.Number (Option.get num)
+            let num = float_of_string_opt token.literal in
+            if Option.is_none num then
+              failwith "Invalid number found in the token literal trying to parse a value"
+            else
+              par, Output.Number (Option.get num)
      | _ -> failwith (sprintf "Unsupported or invalid token type for object value. Got a token of `%s` with value `%s` while trying to parse a value." (to_tokentype_string par.curr) token.literal)
 
 and parse_array (par: t): t * Output.t =
